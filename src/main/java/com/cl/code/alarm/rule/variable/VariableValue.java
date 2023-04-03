@@ -5,4 +5,6 @@ package com.cl.code.alarm.rule.variable;
  * @since 1.0.0
  */
 public class VariableValue {
+    
+
 }

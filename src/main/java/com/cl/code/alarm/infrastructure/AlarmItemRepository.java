@@ -1,7 +1,7 @@
 package com.cl.code.alarm.infrastructure;
 
-import com.cl.code.alarm.business.BusinessScope;
 import com.cl.code.alarm.core.AlarmItem;
+import com.cl.code.alarm.monitor.Factor;
 
 import java.util.List;
 
@@ -14,12 +14,12 @@ import java.util.List;
 public interface AlarmItemRepository {
 
     /**
-     * 通过范围获取预警项 (生效的)
+     * 得到预警项通过改变因素
      *
-     * @param businessScope 业务范围
+     * @param factor 因素
      * @return {@link List}<{@link AlarmItem}>
      */
-    List<AlarmItem> getAlarmItemByScope(BusinessScope businessScope);
+    List<AlarmItem> getAlarmItemByChangeFactor(Factor factor);
 
     /**
      * 添加预警项

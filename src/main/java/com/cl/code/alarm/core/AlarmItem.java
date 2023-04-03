@@ -1,10 +1,10 @@
 package com.cl.code.alarm.core;
 
-import com.cl.code.alarm.monitor.MonitorTargets;
+import com.cl.code.alarm.monitor.ChangeFactors;
 import com.cl.code.alarm.notify.NotifyChannels;
 import com.cl.code.alarm.notify.NotifyTargets;
 import com.cl.code.alarm.rule.AlarmRules;
-import lombok.Getter;
+import lombok.Data;
 
 /**
  * 预警项
@@ -12,7 +12,7 @@ import lombok.Getter;
  * @author chengliang
  * @since 1.0.0
  */
-@Getter
+@Data
 public class AlarmItem {
 
     /**
@@ -21,9 +21,14 @@ public class AlarmItem {
     private final Long alarmItemId;
 
     /**
-     * 监控目标
+     * 预警类型
      */
-    private MonitorTargets monitorTargets;
+    private final AlarmType alarmType;
+
+    /**
+     * 变化因素
+     */
+    private ChangeFactors changeFactors;
 
     /**
      * 预警规则
@@ -41,12 +46,12 @@ public class AlarmItem {
     private NotifyChannels notifyChannels;
 
 
-    public AlarmItem(Long alarmItemId) {
+    public AlarmItem(Long alarmItemId, AlarmType alarmType) {
+        this.alarmType = alarmType;
         if (alarmItemId == null) {
             throw new IllegalArgumentException("预警项id不能为空");
         }
         this.alarmItemId = alarmItemId;
     }
-
 
 }

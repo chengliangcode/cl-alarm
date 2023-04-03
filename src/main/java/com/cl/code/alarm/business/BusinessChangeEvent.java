@@ -1,7 +1,9 @@
 package com.cl.code.alarm.business;
 
-import com.alibaba.fastjson2.JSON;
+import com.cl.code.alarm.monitor.Factor;
 import lombok.Getter;
+
+import java.util.List;
 
 /**
  * 业务变更事件
@@ -12,17 +14,13 @@ import lombok.Getter;
 @Getter
 public class BusinessChangeEvent {
 
-    private final BusinessScope businessScope;
+    private final Factor factor;
 
-    private final String businessIndex;
+    private final List<Long> businessIds;
 
-    private BusinessChangeEvent(BusinessScope businessScope, String businessIndex) {
-        this.businessScope = businessScope;
-        this.businessIndex = businessIndex;
-    }
-
-    public static BusinessChangeEvent of(BusinessScope businessScope, Object businessIndex) {
-        return new BusinessChangeEvent(businessScope, businessIndex == null ? null : JSON.toJSONString(businessIndex));
+    public BusinessChangeEvent(Factor factor, List<Long> businessIds) {
+        this.factor = factor;
+        this.businessIds = businessIds;
     }
 
 

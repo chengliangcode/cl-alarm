@@ -12,18 +12,18 @@ import java.util.List;
  */
 public class NotifyTargets {
 
-    List<NotifyTargetItem> notifyTargetItems = new ArrayList<>(5);
+    List<NotifyTargetItem> targetItems = new ArrayList<>(5);
 
-    public NotifyTargets(List<NotifyTargetItem> notifyTargetItems) {
-        this.notifyTargetItems.addAll(notifyTargetItems);
+    public NotifyTargets(List<NotifyTargetItem> targetItems) {
+        this.targetItems.addAll(targetItems);
     }
 
-    public void addNotifyTargetItem(NotifyTargetItem notifyTargetItem) {
-        this.notifyTargetItems.add(notifyTargetItem);
+    public void addTargetItem(NotifyTargetItem notifyTargetItem) {
+        this.targetItems.add(notifyTargetItem);
     }
 
-    public List<NotifyTargetItem> getNotifyTargetItems() {
-        return Collections.unmodifiableList(this.notifyTargetItems);
+    public List<NotifyTargetItem> getTargetItems() {
+        return Collections.unmodifiableList(this.targetItems);
     }
 
 }

@@ -1,6 +1,6 @@
 package com.cl.code.alarm.rule;
 
-import com.cl.code.el.expression.base.BooleanExpression;
+import com.cl.code.el.expression.base.Expression;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,21 +14,21 @@ import java.util.List;
  */
 public class AlarmRules {
 
-    private final List<BooleanExpression> ruleList = new ArrayList<>();
+    private final List<Expression<Boolean>> ruleList = new ArrayList<>();
 
-    public AlarmRules(BooleanExpression rule) {
+    public AlarmRules(Expression<Boolean> rule) {
         this.ruleList.add(rule);
     }
 
-    public AlarmRules(List<BooleanExpression> ruleList) {
+    public AlarmRules(List<Expression<Boolean>> ruleList) {
         this.ruleList.addAll(ruleList);
     }
 
-    public void addRule(BooleanExpression rule) {
+    public void addRule(Expression<Boolean> rule) {
         this.ruleList.add(rule);
     }
 
-    public List<BooleanExpression> getRuleList() {
+    public List<Expression<Boolean>> getRuleList() {
         return Collections.unmodifiableList(ruleList);
     }
 

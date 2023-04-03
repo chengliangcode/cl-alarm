@@ -1,19 +1,13 @@
 package com.cl.code.alarm;
 
 import com.cl.code.alarm.business.BusinessChangeEvent;
-import com.cl.code.alarm.business.BusinessScope;
 import com.cl.code.alarm.core.AlarmItem;
 import com.cl.code.alarm.infrastructure.AlarmItemRepository;
-import com.cl.code.alarm.rule.variable.VariableFactory;
-import com.cl.code.alarm.rule.variable.VariableProvider;
-import com.cl.code.alarm.rule.variable.VariableValue;
-import com.cl.code.el.expression.base.BooleanExpression;
-import com.cl.code.el.expression.base.StringExpression;
-import com.cl.code.el.param.VariableParam;
+import com.cl.code.alarm.rule.RuleHandler;
 import com.google.common.collect.Iterables;
 
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 业务预警服务
@@ -32,32 +26,23 @@ public class BusinessAlarmTrigger {
     /**
      * 触发
      *
-     * @param businessChangeEvent 业务更改事件
+     * @param event 事件
      */
-    public void trigger(BusinessChangeEvent businessChangeEvent) {
-        BusinessScope businessScope = businessChangeEvent.getBusinessScope();
-        // 查找对于预警范围的预警
-        List<AlarmItem> alarmItems = alarmItemRepository.getAlarmItemByScope(businessScope);
-        if (alarmItems == null || alarmItems.size() == 0) {
-            // 无对应范围预警
-            return;
-        }
-        // 获取该预警所需条件(向依赖者获取)
-        for (AlarmItem alarmItem : alarmItems) {
-            List<BooleanExpression> expressions = alarmItem.getAlarmRules().getRuleList();
-            // 判断是否满足条件
-            for (StringExpression<?> expression : expressions) {
-                Set<VariableParam> variableParams = expression.getVariableParams();
-                if (!Iterables.isEmpty(variableParams)) {
-                    // 有变量参数
-                    for (VariableParam variableParam : variableParams) {
+    public void trigger(BusinessChangeEvent event) {
 
-                        VariableProvider variableProvider = VariableFactory.getVariableProvider(variableParam.getName());
-                        VariableValue variableValue = variableProvider.getVariableValue(variableParam, businessChangeEvent.getBusinessIndex());
-                    }
-                }
-            }
-        }
+        List<AlarmItem> alarmItems = alarmItemRepository.getAlarmItemByChangeFactor(event.getFactor());
+
+        // 过滤生效的预警项
+        alarmItems = alarmItems.stream()
+                .filter(item -> !Iterables.isEmpty(item.getNotifyTargets().getTargetItems()))
+                .filter(item -> !Iterables.isEmpty(item.getNotifyChannels().getChannels()))
+                .collect(Collectors.toList());
+
+        List<Long> businessIds = event.getBusinessIds();
+
+        RuleHandler.execute(alarmItems, businessIds);
+
+
     }
 
 }

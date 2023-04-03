@@ -4,6 +4,12 @@ import lombok.Data;
 
 import java.util.Objects;
 
+/**
+ * 预警类型
+ *
+ * @author chengliang
+ * @since 1.0.0
+ */
 @Data
 public class AlarmType {
 
