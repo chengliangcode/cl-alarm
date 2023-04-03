@@ -1,7 +1,7 @@
 package com.cl.code.alarm.infrastructure;
 
 import com.cl.code.alarm.business.BusinessScope;
-import com.cl.code.alarm.domain.entity.AlarmItem;
+import com.cl.code.alarm.core.AlarmItem;
 
 import java.util.List;
 

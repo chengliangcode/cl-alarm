@@ -1,4 +1,4 @@
-package com.cl.code.alarm.variable;
+package com.cl.code.alarm.rule.variable;
 
 import com.cl.code.el.param.VariableParam;
 import com.google.common.base.Strings;

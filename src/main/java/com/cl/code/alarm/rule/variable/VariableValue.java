@@ -1,4 +1,4 @@
-package com.cl.code.alarm.variable;
+package com.cl.code.alarm.rule.variable;
 
 /**
  * @author chengliang

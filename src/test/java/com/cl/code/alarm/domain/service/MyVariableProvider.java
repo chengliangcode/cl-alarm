@@ -1,7 +1,7 @@
 package com.cl.code.alarm.domain.service;
 
-import com.cl.code.alarm.variable.VariableProvider;
-import com.cl.code.alarm.variable.VariableValue;
+import com.cl.code.alarm.rule.variable.VariableProvider;
+import com.cl.code.alarm.rule.variable.VariableValue;
 import com.cl.code.el.param.VariableParam;
 
 /**

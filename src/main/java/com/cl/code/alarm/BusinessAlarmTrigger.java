@@ -2,11 +2,12 @@ package com.cl.code.alarm;
 
 import com.cl.code.alarm.business.BusinessChangeEvent;
 import com.cl.code.alarm.business.BusinessScope;
-import com.cl.code.alarm.domain.entity.AlarmItem;
+import com.cl.code.alarm.core.AlarmItem;
 import com.cl.code.alarm.infrastructure.AlarmItemRepository;
-import com.cl.code.alarm.variable.VariableFactory;
-import com.cl.code.alarm.variable.VariableProvider;
-import com.cl.code.alarm.variable.VariableValue;
+import com.cl.code.alarm.rule.variable.VariableFactory;
+import com.cl.code.alarm.rule.variable.VariableProvider;
+import com.cl.code.alarm.rule.variable.VariableValue;
+import com.cl.code.el.expression.base.BooleanExpression;
 import com.cl.code.el.expression.base.StringExpression;
 import com.cl.code.el.param.VariableParam;
 import com.google.common.collect.Iterables;
@@ -43,7 +44,7 @@ public class BusinessAlarmTrigger {
         }
         // 获取该预警所需条件(向依赖者获取)
         for (AlarmItem alarmItem : alarmItems) {
-            List<StringExpression<?>> expressions = alarmItem.getExpressions();
+            List<BooleanExpression> expressions = alarmItem.getAlarmRules().getRuleList();
             // 判断是否满足条件
             for (StringExpression<?> expression : expressions) {
                 Set<VariableParam> variableParams = expression.getVariableParams();

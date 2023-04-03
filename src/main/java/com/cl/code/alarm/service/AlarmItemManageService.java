@@ -1,6 +1,6 @@
-package com.cl.code.alarm.domain.service;
+package com.cl.code.alarm.service;
 
-import com.cl.code.alarm.domain.entity.AlarmItem;
+import com.cl.code.alarm.core.AlarmItem;
 
 import java.util.List;
 
