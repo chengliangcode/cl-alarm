@@ -12,17 +12,17 @@ import java.util.List;
  */
 public class NotifyTargets {
 
-    List<NotifyTargetItem> targetItems = new ArrayList<>(5);
+    private final List<NotifyVirtualTarget> targetItems = new ArrayList<>(5);
 
-    public NotifyTargets(List<NotifyTargetItem> targetItems) {
+    public NotifyTargets(List<NotifyVirtualTarget> targetItems) {
         this.targetItems.addAll(targetItems);
     }
 
-    public void addTargetItem(NotifyTargetItem notifyTargetItem) {
+    public void addTargetItem(NotifyVirtualTarget notifyTargetItem) {
         this.targetItems.add(notifyTargetItem);
     }
 
-    public List<NotifyTargetItem> getTargetItems() {
+    public List<NotifyVirtualTarget> getTargetItems() {
         return Collections.unmodifiableList(this.targetItems);
     }
 

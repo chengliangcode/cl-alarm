@@ -15,7 +15,6 @@
     </properties>
 
     <dependencies>
-
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -39,7 +38,6 @@
             <artifactId>cl-expression</artifactId>
             <version>1.0.0</version>
         </dependency>
-
     </dependencies>
 
 </project>

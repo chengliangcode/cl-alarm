@@ -4,16 +4,14 @@ import com.cl.code.alarm.core.AlarmItem;
 import com.cl.code.alarm.core.AlarmStrategy;
 import com.cl.code.alarm.core.AlarmStrategyFactory;
 import com.cl.code.alarm.core.AlarmType;
+import com.cl.code.alarm.util.UnmodifiableList;
 import com.cl.code.el.ExpressionExecutor;
 import com.cl.code.el.expression.base.Expression;
 import com.cl.code.el.param.VariableParam;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Iterables;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -23,31 +21,36 @@ import java.util.stream.Collectors;
  * @author chengliang
  * @since 1.0.0
  */
-public class RuleHandler {
+public class AlarmRuleHandler {
 
-    public static void execute(List<AlarmItem> alarmItems, List<Long> businessIds) {
+    public static Map<AlarmItem, UnmodifiableList<Long>> execute(List<AlarmItem> alarmItems, UnmodifiableList<Long> businessIds) {
         if (Iterables.isEmpty(alarmItems) || Iterables.isEmpty(businessIds)) {
-            return;
+            return Collections.emptyMap();
         }
+
+        // 过滤生效的预警项
+        alarmItems = alarmItems.stream().filter(item -> !Iterables.isEmpty(item.getNotifyTargets().getTargetItems())).filter(item -> !Iterables.isEmpty(item.getNotifyChannels().getChannels())).collect(Collectors.toList());
+
         // 每个预警项 都要执行每个业务id
         Map<AlarmType, List<AlarmItem>> collect = alarmItems.stream().collect(Collectors.groupingBy(AlarmItem::getAlarmType));
 
+        Map<AlarmItem, UnmodifiableList<Long>> item = new HashMap<>();
         for (Map.Entry<AlarmType, List<AlarmItem>> entry : collect.entrySet()) {
-            Map<AlarmItem, List<Long>> execute = execute(entry.getKey(), entry.getValue(), businessIds);
-            System.out.println(execute);
+            Map<AlarmItem, UnmodifiableList<Long>> execute = execute(entry.getKey(), entry.getValue(), businessIds);
+            item.putAll(execute);
         }
-
+        return item;
     }
 
-    private static Map<AlarmItem, List<Long>> execute(AlarmType alarmType, List<AlarmItem> alarmItems, List<Long> businessIds) {
+    private static Map<AlarmItem, UnmodifiableList<Long>> execute(AlarmType alarmType, List<AlarmItem> alarmItems, UnmodifiableList<Long> businessIds) {
 
-        AlarmStrategy strategy = AlarmStrategyFactory.getStrategy(alarmType.getName());
+        AlarmStrategy strategy = AlarmStrategyFactory.getStrategy(alarmType);
 
         // 缓存参数
         HashBasedTable<VariableParam, Long, Object> cache = HashBasedTable.create();
         return alarmItems.stream().collect(Collectors.toMap(Function.identity(), alarmItem -> {
             List<Expression<Boolean>> ruleList = alarmItem.getAlarmRules().getRuleList();
-            return businessIds.stream().filter(businessId -> ruleList.stream().allMatch(booleanExpression -> {
+            return new UnmodifiableList<>(businessIds.stream().filter(businessId -> ruleList.stream().allMatch(booleanExpression -> {
                 Set<VariableParam> variableParams = booleanExpression.getVariableParams();
                 Map<VariableParam, Object> params = new HashMap<>(2);
                 if (!Iterables.isEmpty(variableParams)) {
@@ -64,7 +67,7 @@ public class RuleHandler {
                     });
                 }
                 return ExpressionExecutor.execute(booleanExpression, params);
-            })).collect(Collectors.toList());
+            })).collect(Collectors.toList()));
         }));
     }
 

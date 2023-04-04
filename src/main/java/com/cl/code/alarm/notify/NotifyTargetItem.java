@@ -9,7 +9,7 @@ import com.google.common.base.Strings;
  * @author chengliang
  * @since 1.0.0
  */
-public class NotifyTargetItem {
+public class NotifyTargetItem implements NotifyVirtualTarget {
 
     /**
      * 目标类型
@@ -27,6 +27,10 @@ public class NotifyTargetItem {
         }
         this.type = type;
         this.value = value;
+    }
+
+    public NotifyTargetItem of(String type, String value) {
+        return new NotifyTargetItem(type, value);
     }
 
     public String getType() {

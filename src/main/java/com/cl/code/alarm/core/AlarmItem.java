@@ -4,7 +4,6 @@ import com.cl.code.alarm.monitor.ChangeFactors;
 import com.cl.code.alarm.notify.NotifyChannels;
 import com.cl.code.alarm.notify.NotifyTargets;
 import com.cl.code.alarm.rule.AlarmRules;
-import lombok.Data;
 
 /**
  * 预警项
@@ -12,46 +11,48 @@ import lombok.Data;
  * @author chengliang
  * @since 1.0.0
  */
-@Data
-public class AlarmItem {
+public interface AlarmItem {
 
     /**
-     * 预警项id
+     * 得到预警项id
+     *
+     * @return {@code Long}
      */
-    private final Long alarmItemId;
+    Long getAlarmItemId();
 
     /**
-     * 预警类型
+     * 得到预警类型
+     *
+     * @return {@code AlarmType}
      */
-    private final AlarmType alarmType;
+    AlarmType getAlarmType();
 
     /**
-     * 变化因素
+     * 得到变化因素
+     *
+     * @return {@code ChangeFactors}
      */
-    private ChangeFactors changeFactors;
+    ChangeFactors getChangeFactors();
 
     /**
-     * 预警规则
+     * 得到预警规则
+     *
+     * @return {@code AlarmRules}
      */
-    private AlarmRules alarmRules;
+    AlarmRules getAlarmRules();
 
     /**
-     * 预警通知目标
+     * 得到通知目标
+     *
+     * @return {@code NotifyTargets}
      */
-    private NotifyTargets notifyTargets;
+    NotifyTargets getNotifyTargets();
 
     /**
-     * 通知方式
+     * 得到通知渠道
+     *
+     * @return {@code NotifyChannels}
      */
-    private NotifyChannels notifyChannels;
-
-
-    public AlarmItem(Long alarmItemId, AlarmType alarmType) {
-        this.alarmType = alarmType;
-        if (alarmItemId == null) {
-            throw new IllegalArgumentException("预警项id不能为空");
-        }
-        this.alarmItemId = alarmItemId;
-    }
+    NotifyChannels getNotifyChannels();
 
 }

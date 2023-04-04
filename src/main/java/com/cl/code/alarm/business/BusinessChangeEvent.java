@@ -1,6 +1,8 @@
 package com.cl.code.alarm.business;
 
 import com.cl.code.alarm.monitor.Factor;
+import com.cl.code.alarm.util.UnmodifiableList;
+import com.google.common.collect.Lists;
 import lombok.Getter;
 
 import java.util.List;
@@ -16,12 +18,15 @@ public class BusinessChangeEvent {
 
     private final Factor factor;
 
-    private final List<Long> businessIds;
+    private final UnmodifiableList<Long> businessIds;
+
+    public BusinessChangeEvent(Factor factor, Long businessId) {
+        this(factor, Lists.newArrayList(businessId));
+    }
 
     public BusinessChangeEvent(Factor factor, List<Long> businessIds) {
         this.factor = factor;
-        this.businessIds = businessIds;
+        this.businessIds = new UnmodifiableList<>(businessIds);
     }
-
 
 }

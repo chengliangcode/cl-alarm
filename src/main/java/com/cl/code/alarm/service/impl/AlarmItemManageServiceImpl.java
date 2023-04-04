@@ -1,6 +1,6 @@
 package com.cl.code.alarm.service.impl;
 
-import com.cl.code.alarm.core.AlarmItem;
+import com.cl.code.alarm.core.AlarmItemEntity;
 import com.cl.code.alarm.service.AlarmItemManageService;
 import com.cl.code.alarm.infrastructure.AlarmItemRepository;
 
@@ -17,12 +17,12 @@ public class AlarmItemManageServiceImpl implements AlarmItemManageService {
     private AlarmItemRepository alarmItemRepository;
 
     @Override
-    public void addAlarmItem(AlarmItem alarmItem) {
-        alarmItemRepository.addAlarmItem(alarmItem);
+    public void addAlarmItem(AlarmItemEntity alarmItemEntity) {
+        alarmItemRepository.addAlarmItem(alarmItemEntity);
     }
 
     @Override
-    public void updateAlarmItem(AlarmItem alarmItem) {
+    public void updateAlarmItem(AlarmItemEntity alarmItemEntity) {
 
     }
 

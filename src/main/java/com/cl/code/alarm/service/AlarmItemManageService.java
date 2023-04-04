@@ -1,6 +1,6 @@
 package com.cl.code.alarm.service;
 
-import com.cl.code.alarm.core.AlarmItem;
+import com.cl.code.alarm.core.AlarmItemEntity;
 
 import java.util.List;
 
@@ -13,16 +13,16 @@ public interface AlarmItemManageService {
     /**
      * 添加预警项
      *
-     * @param alarmItem 预警项
+     * @param alarmItemEntity 预警项
      */
-    void addAlarmItem(AlarmItem alarmItem);
+    void addAlarmItem(AlarmItemEntity alarmItemEntity);
 
     /**
      * 更新预警项
      *
-     * @param alarmItem 预警项
+     * @param alarmItemEntity 预警项
      */
-    void updateAlarmItem(AlarmItem alarmItem);
+    void updateAlarmItem(AlarmItemEntity alarmItemEntity);
 
     /**
      * 删除预警项
