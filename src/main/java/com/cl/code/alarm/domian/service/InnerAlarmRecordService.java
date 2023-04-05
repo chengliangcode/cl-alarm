@@ -45,6 +45,9 @@ public class InnerAlarmRecordService {
                         unHandleAlarmRecords.addAll(alarmRecords);
                     }
                 }));
+        if (!CollectionUtils.isNullOrEmpty(unHandleAlarmRecords)) {
+            logger.info("已经存在的预警记录" + unHandleAlarmRecords.stream().map(item -> item.getAlarmRecordId().toString()).collect(Collectors.joining(",")));
+        }
         return unHandleAlarmRecords;
 
     }
@@ -52,6 +55,7 @@ public class InnerAlarmRecordService {
 
     public void handleAlarmRecords(List<AlarmRecord> alarmRecords) {
         if (!CollectionUtils.isNullOrEmpty(alarmRecords)) {
+            logger.info("置为已处理预警记录" + alarmRecords.stream().map(item -> item.getAlarmRecordId().toString()).collect(Collectors.joining(",")));
             alarmRecordRepository.handleRecord(alarmRecords);
         }
     }

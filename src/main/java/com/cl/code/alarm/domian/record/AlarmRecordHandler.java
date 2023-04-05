@@ -34,15 +34,13 @@ public class AlarmRecordHandler {
             AlarmStrategy strategy = AlarmStrategyFactory.getStrategy(alarmItem.getAlarmType());
             Map<Long, RecordSupplement> appends = strategy.recordAppend(alarmItem, businessIds);
 
-            if (Objects.equals(appends.size(), businessIds.size())) {
+            if (!Objects.equals(appends.size(), businessIds.size())) {
                 throw new RuntimeException("预警记录补充异常，补充数量与业务数量不一致");
             }
 
             for (Long businessId : businessIds) {
                 // 判断是否已经存在
-                Optional<AlarmRecord> optional = unprocessedAlarmRecords.stream()
-                        .filter(alarmRecord -> alarmRecord.getBusinessId().equals(businessId) && alarmRecord.getAlarmItemId().equals(alarmItem.getAlarmItemId()))
-                        .findFirst();
+                Optional<AlarmRecord> optional = unprocessedAlarmRecords.stream().filter(alarmRecord -> alarmRecord.getBusinessId().equals(businessId) && alarmRecord.getAlarmItemId().equals(alarmItem.getAlarmItemId())).findFirst();
 
                 AlarmRecord record;
                 if (optional.isPresent()) {
@@ -74,9 +72,7 @@ public class AlarmRecordHandler {
             return Collections.emptyList();
         }
         // 第二次不满足自动变为已处理状态
-        return unprocessedAlarmRecords.stream()
-                .filter(record -> AlarmStrategyFactory.getStrategy(record.getAlarmType()).isAutoUpdateRecordStatus())
-                .collect(Collectors.toList());
+        return unprocessedAlarmRecords.stream().filter(record -> AlarmStrategyFactory.getStrategy(record.getAlarmType()).isAutoUpdateRecordStatus()).collect(Collectors.toList());
     }
 
 }

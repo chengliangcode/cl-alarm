@@ -6,6 +6,8 @@ import com.cl.code.alarm.domian.item.AlarmItem;
 import com.cl.code.alarm.domian.record.AlarmRecord;
 import com.cl.code.alarm.util.CollectionUtils;
 import com.google.common.collect.HashBasedTable;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 
@@ -16,6 +18,9 @@ import java.util.*;
  * @since 1.0.0
  */
 public class NotifyTargetHandler {
+
+    private static final Log logger = LogFactory.getLog(NotifyTargetHandler.class);
+
 
     /**
      * 执行
@@ -37,15 +42,22 @@ public class NotifyTargetHandler {
 
             Set<Long> allRealTargetIds = new HashSet<>();
             virtualTargets.forEach(virtualTarget -> {
-                Set<Long> realTargetIds = cache.get(virtualTarget.index(), businessId);
-                if (CollectionUtils.isNullOrEmpty(realTargetIds)) {
+                Set<Long> realTargetIds;
+                if (cache.contains(virtualTarget.index(), businessId)) {
+                    realTargetIds = cache.get(virtualTarget.index(), businessId);
+                    if (CollectionUtils.isNullOrEmpty(realTargetIds)) {
+                        realTargetIds = Collections.emptySet();
+                    }
+                } else {
                     // 解析通知对象
-                    realTargetIds = strategy.parseNotifyTarget(virtualTarget, businessId);
+                    Optional<Set<Long>> optional = strategy.parseNotifyTarget(virtualTarget, businessId);
+                    realTargetIds = optional.orElse(Collections.emptySet());
                     cache.put(virtualTarget.index(), businessId, realTargetIds);
                 }
                 allRealTargetIds.addAll(realTargetIds);
             });
             // 设置真实通知对象
+            logger.info("预警记录[" + alarmRecord + "]的真实通知对象为[" + allRealTargetIds + "]");
             alarmRecordAndPushTargetMap.put(alarmRecord, allRealTargetIds);
         });
         return alarmRecordAndPushTargetMap;

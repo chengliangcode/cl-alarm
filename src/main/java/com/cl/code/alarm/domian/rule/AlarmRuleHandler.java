@@ -57,17 +57,22 @@ public class AlarmRuleHandler {
                 Set<VariableParam> variableParams = booleanExpression.getVariableParams();
                 Map<VariableParam, Object> params = new HashMap<>(2);
                 if (!CollectionUtils.isNullOrEmpty(variableParams)) {
-                    // 获取参数
-                    variableParams.forEach(variableParam -> {
-                        Object value;
+
+                    for (VariableParam variableParam : variableParams) {
+                        Object variableValue;
                         if (cache.contains(variableParam, businessId)) {
-                            value = cache.get(variableParam, businessId);
+                            variableValue = cache.get(variableParam, businessId);
                         } else {
-                            value = strategy.getValue(variableParam, businessId);
-                            cache.put(variableParam, businessId, value);
+                            Optional<?> variableValueOptional = strategy.getVariableValue(variableParam, businessId);
+                            if (variableValueOptional.isPresent()) {
+                                variableValue = variableValueOptional.get();
+                                cache.put(variableParam, businessId, variableValue);
+                            } else {
+                                return false;
+                            }
                         }
-                        params.put(variableParam, value);
-                    });
+                        params.put(variableParam, variableValue);
+                    }
                 }
                 return ExpressionExecutor.execute(booleanExpression, params);
             })).collect(Collectors.toList()));

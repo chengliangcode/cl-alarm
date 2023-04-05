@@ -73,25 +73,32 @@ public final class AgtAlarmService {
         if (CollectionUtils.isNullOrEmpty(alarmItems)) {
             return;
         }
-        // 获取已经存在的预警记录
-        List<AlarmRecord> unHandleAlarmRecords = innerAlarmRecordService.getUnHandleAlarmRecords(alarmItems, event.getBusinessIds());
 
         // 生效预警
         Map<AlarmItem, UnmodifiableList<Long>> effectAlarmItems = AlarmRuleHandler.execute(alarmItems, event.getBusinessIds());
-        if (CollectionUtils.isNullOrEmpty(unHandleAlarmRecords) || CollectionUtils.isNullOrEmpty(effectAlarmItems)) {
+        if (CollectionUtils.isNullOrEmpty(effectAlarmItems)) {
             logger.info("没有生效的预警项");
-            return;
+        } else {
+            effectAlarmItems.forEach((alarmItem, businessIds) -> {
+                logger.info("预警项[" + alarmItem.getAlarmItemId() + "]生效,businessId:" + JSON.toJSONString(businessIds.get()));
+            });
         }
+
+        // 获取已经存在的预警记录
+        List<AlarmRecord> unHandleAlarmRecords = innerAlarmRecordService.getUnHandleAlarmRecords(alarmItems, event.getBusinessIds());
 
         // 生成预警记录
         Map<AlarmRecord, AlarmItem> alarmRecordMap = AlarmRecordHandler.execute(effectAlarmItems, unHandleAlarmRecords);
 
         // 业务自动已处理逻辑
-        List<AlarmRecord> alarmRecords = AlarmRecordHandler.filterAutoUpdateStatusRecord(unHandleAlarmRecords);
+        unHandleAlarmRecords = AlarmRecordHandler.filterAutoUpdateStatusRecord(unHandleAlarmRecords);
 
         // 记录变为已处理
-        innerAlarmRecordService.handleAlarmRecords(alarmRecords);
+        innerAlarmRecordService.handleAlarmRecords(unHandleAlarmRecords);
 
+        if (CollectionUtils.isNullOrEmpty(alarmRecordMap)) {
+            return;
+        }
         // 保存记录更新
         innerAlarmRecordService.saveOrUpdateAlarmRecords(alarmRecordMap.keySet());
 
@@ -105,7 +112,11 @@ public final class AgtAlarmService {
             Set<Long> targetIds = alarmRecordAndPushTargetMap.get(alarmRecord);
             List<NotifyChannel> channels = alarmRecordAndPushChannelMap.get(alarmRecord);
             // 创建和推送消息
-            alarmMessageProvider.createAndPushMessage(alarmRecord, channels, targetIds);
+            if (!CollectionUtils.isNullOrEmpty(targetIds) && !CollectionUtils.isNullOrEmpty(channels)) {
+                logger.info("创建和推送消息,预警记录[" + alarmRecord.getAlarmRecordId() + "],通知目标:" + JSON.toJSONString(targetIds) + ",通知方式:" + JSON.toJSONString(channels));
+                alarmMessageProvider.createAndPushMessage(alarmRecord, channels, targetIds);
+            }
+
         });
     }
 }

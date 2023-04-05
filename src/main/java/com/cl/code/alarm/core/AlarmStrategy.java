@@ -8,6 +8,7 @@ import com.cl.code.alarm.util.UnmodifiableList;
 import com.cl.code.el.param.VariableParam;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -34,7 +35,7 @@ public interface AlarmStrategy {
      * @param businessId 业务标识
      * @return {@link VariableValue}
      */
-    Object getValue(VariableParam param, Long businessId);
+    Optional<?> getVariableValue(VariableParam param, Long businessId);
 
     /**
      * 添加记录
@@ -65,6 +66,6 @@ public interface AlarmStrategy {
      * @param notifyTarget 通知目标
      * @return {@code List<Long>}
      */
-    Set<Long> parseNotifyTarget(NotifyVirtualTarget notifyTarget, Long businessId);
+    Optional<Set<Long>> parseNotifyTarget(NotifyVirtualTarget notifyTarget, Long businessId);
 
 }
