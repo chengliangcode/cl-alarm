@@ -1,16 +1,16 @@
-package com.cl.code.alarm.core;
+package com.cl.code.alarm.domian.notify.channel;
 
 /**
- * 预警类型
+ * 通知通道
  *
  * @author chengliang
  * @since 1.0.0
  */
 @FunctionalInterface
-public interface AlarmType {
+public interface NotifyChannel {
 
     /**
-     * 名字
+     * 得到名字
      *
      * @return {@link String}
      */

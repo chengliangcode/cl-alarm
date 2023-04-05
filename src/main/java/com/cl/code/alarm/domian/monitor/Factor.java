@@ -1,19 +1,20 @@
-package com.cl.code.alarm.core;
+package com.cl.code.alarm.domian.monitor;
 
 /**
- * 预警类型
+ * 因素
  *
  * @author chengliang
  * @since 1.0.0
  */
 @FunctionalInterface
-public interface AlarmType {
+public interface Factor {
 
     /**
-     * 名字
+     * 得到名字
      *
      * @return {@link String}
      */
     String getName();
 
 }
+

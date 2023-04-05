@@ -13,14 +13,14 @@ public class AlarmStrategyFactory {
 
     private static final Map<String, AlarmStrategy> STRATEGY_MAP = new HashMap<>();
 
-    public static void registerStrategy(AlarmType alarmType, AlarmStrategy strategy) {
-        STRATEGY_MAP.put(alarmType.getName(), strategy);
+    public static void registerStrategy(String alarmType, AlarmStrategy strategy) {
+        STRATEGY_MAP.put(alarmType, strategy);
     }
 
-    public static AlarmStrategy getStrategy(AlarmType alarmType) {
-        AlarmStrategy strategy = STRATEGY_MAP.get(alarmType.getName());
+    public static AlarmStrategy getStrategy(String alarmType) {
+        AlarmStrategy strategy = STRATEGY_MAP.get(alarmType);
         if (strategy == null) {
-            throw new IllegalArgumentException("未知的预警类型");
+            throw new IllegalArgumentException("未知的预警类型[" + alarmType + "],请实现该预警类型的策略类" + AlarmStrategy.class + "并注册到" + AlarmStrategyFactory.class + "中");
         }
         return strategy;
     }

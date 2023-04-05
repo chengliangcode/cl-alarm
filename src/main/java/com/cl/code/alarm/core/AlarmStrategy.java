@@ -1,24 +1,31 @@
 package com.cl.code.alarm.core;
 
-import com.cl.code.alarm.notify.NotifyVirtualTarget;
-import com.cl.code.alarm.record.RecordSupplement;
-import com.cl.code.alarm.rule.variable.VariableValue;
+import com.cl.code.alarm.domian.item.AlarmItem;
+import com.cl.code.alarm.domian.notify.target.NotifyVirtualTarget;
+import com.cl.code.alarm.domian.record.RecordSupplement;
+import com.cl.code.alarm.domian.rule.variable.VariableValue;
 import com.cl.code.alarm.util.UnmodifiableList;
 import com.cl.code.el.param.VariableParam;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
  * 预警策略
- * 提供参数工厂
  *
  * @author chengliang
  * @since 1.0.0
  */
 public interface AlarmStrategy {
+
+    /**
+     * 是否自动更新记录状态
+     *
+     * @return boolean
+     */
+    boolean isAutoUpdateRecordStatus();
 
     /**
      * 获取值
@@ -58,6 +65,6 @@ public interface AlarmStrategy {
      * @param notifyTarget 通知目标
      * @return {@code List<Long>}
      */
-    List<Long> parseNotifyTarget(NotifyVirtualTarget notifyTarget, Long businessId);
+    Set<Long> parseNotifyTarget(NotifyVirtualTarget notifyTarget, Long businessId);
 
 }

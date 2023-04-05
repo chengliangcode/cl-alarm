@@ -1,7 +1,7 @@
 package com.cl.code.alarm.infrastructure;
 
-import com.cl.code.alarm.core.AlarmItem;
-import com.cl.code.alarm.monitor.Factor;
+import com.cl.code.alarm.domian.item.AlarmItem;
+import com.cl.code.alarm.domian.monitor.Factor;
 import com.cl.code.alarm.util.UnmodifiableList;
 
 import java.util.List;
@@ -15,10 +15,18 @@ import java.util.List;
 public interface AlarmItemRepository {
 
     /**
-     * 得到预警项通过改变因素
+     * 得到预警项通过id
      *
-     * @param factor 因素
-     * @return {@code UnmodifiableList<AlarmItem>}
+     * @param alarmItemId 预警项id
+     * @return {@code AlarmItem}
+     */
+    AlarmItem getAlarmItemById(Long alarmItemId);
+
+    /**
+     * 得到预警项通过变动因素
+     *
+     * @param factor 变动因素
+     * @return {@code List<AlarmItem>}
      */
     List<AlarmItem> getAlarmItemByChangeFactor(Factor factor);
 

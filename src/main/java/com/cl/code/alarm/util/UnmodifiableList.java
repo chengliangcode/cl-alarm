@@ -4,6 +4,12 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+/**
+ * 无法改变列表
+ *
+ * @author chengliang
+ * @since 1.0.0
+ */
 public class UnmodifiableList<T> implements Iterable<T> {
 
     private final List<T> list;
@@ -47,5 +53,9 @@ public class UnmodifiableList<T> implements Iterable<T> {
     @Override
     public Iterator<T> iterator() {
         return this.list.iterator();
+    }
+
+    public List<T> get() {
+        return this.list;
     }
 }
