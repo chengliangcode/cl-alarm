@@ -1,6 +1,7 @@
 package com.cl.code.alarm.infrastructure;
 
 import com.cl.code.alarm.domian.record.AlarmRecord;
+import com.cl.code.alarm.domian.record.AlarmRecordEntity;
 
 import java.util.List;
 
@@ -19,21 +20,21 @@ public interface AlarmRecordRepository {
      * @param businessId  业务标识
      * @return {@link List}<{@link AlarmRecord}>
      */
-    List<AlarmRecord> getRecordByAlarmItemAndBusinessId(Long alarmItemId, Long businessId);
+    List<AlarmRecordEntity> getRecordByAlarmItemAndBusinessId(Long alarmItemId, Long businessId);
 
     /**
      * 保存记录
      *
      * @param alarmRecords 预警记录
      */
-    void saveRecord(List<AlarmRecord> alarmRecords);
+    void saveRecord(List<AlarmRecordEntity> alarmRecords);
 
     /**
      * 更新记录
      *
      * @param alarmRecords 预警记录
      */
-    void updateRecord(List<AlarmRecord> alarmRecords);
+    void updateRecord(List<AlarmRecordEntity> alarmRecords);
 
     /**
      * 删除通过预警项id

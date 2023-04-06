@@ -1,5 +1,7 @@
 package com.cl.code.alarm.core;
 
+import com.cl.code.alarm.infrastructure.AlarmStrategy;
+
 import java.util.HashMap;
 import java.util.Map;
 

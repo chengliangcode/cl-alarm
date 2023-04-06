@@ -1,15 +1,16 @@
-package com.cl.code.alarm.core;
+package com.cl.code.alarm.infrastructure;
 
 import com.cl.code.alarm.domian.item.AlarmItem;
-import com.cl.code.alarm.domian.notify.target.NotifyVirtualTarget;
+import com.cl.code.alarm.domian.notify.channel.NotifyChannel;
+import com.cl.code.alarm.domian.notify.channel.NotifyChannelProvider;
+import com.cl.code.alarm.domian.notify.mark.NotifyMarkType;
+import com.cl.code.alarm.domian.notify.target.NotifyTargetProvider;
 import com.cl.code.alarm.domian.record.RecordSupplement;
-import com.cl.code.alarm.domian.rule.variable.VariableValue;
+import com.cl.code.alarm.domian.rule.variable.VariableProvider;
 import com.cl.code.alarm.util.UnmodifiableList;
 import com.cl.code.el.param.VariableParam;
 
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -29,13 +30,11 @@ public interface AlarmStrategy {
     boolean isAutoUpdateRecordStatus();
 
     /**
-     * 获取值
+     * 获取变量提供者
      *
-     * @param param      参数
-     * @param businessId 业务标识
-     * @return {@link VariableValue}
+     * @return {@code Map<String, VariableProvider>}
      */
-    Optional<?> getVariableValue(VariableParam param, Long businessId);
+    Map<VariableParam, VariableProvider> getVariableProviders();
 
     /**
      * 添加记录
@@ -60,12 +59,17 @@ public interface AlarmStrategy {
     }
 
     /**
-     * 解析通知目标
+     * 获取通知对象提供者
      *
-     * @param businessId   业务标识
-     * @param notifyTarget 通知目标
-     * @return {@code List<Long>}
+     * @return {@code Map<NotifyMarkType, NotifyTargetProvider>}
      */
-    Optional<Set<Long>> parseNotifyTarget(NotifyVirtualTarget notifyTarget, Long businessId);
+    Map<NotifyMarkType, NotifyTargetProvider> getNotifyTargetProviders();
+
+    /**
+     * 得到通知渠道提供者
+     *
+     * @return {@code Map<NotifyChannel, NotifyChannelProvider>}
+     */
+    Map<NotifyChannel, NotifyChannelProvider> getNotifyChannelProviders();
 
 }

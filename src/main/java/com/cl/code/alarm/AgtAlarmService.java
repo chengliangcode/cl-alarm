@@ -4,13 +4,15 @@ import com.alibaba.fastjson2.JSON;
 import com.cl.code.alarm.domian.business.BusinessChangeEvent;
 import com.cl.code.alarm.domian.item.AlarmItem;
 import com.cl.code.alarm.domian.notify.channel.NotifyChannel;
-import com.cl.code.alarm.domian.notify.channel.NotifyChannelHandler;
-import com.cl.code.alarm.domian.notify.target.NotifyTargetHandler;
+import com.cl.code.alarm.domian.notify.target.NotifyTarget;
 import com.cl.code.alarm.domian.record.AlarmRecord;
-import com.cl.code.alarm.domian.record.AlarmRecordHandler;
-import com.cl.code.alarm.domian.rule.AlarmRuleHandler;
+import com.cl.code.alarm.domian.record.AlarmRecordEntity;
 import com.cl.code.alarm.domian.service.InnerAlarmItemService;
 import com.cl.code.alarm.domian.service.InnerAlarmRecordService;
+import com.cl.code.alarm.handler.AlarmRecordHandler;
+import com.cl.code.alarm.handler.AlarmRuleHandler;
+import com.cl.code.alarm.handler.NotifyChannelHandler;
+import com.cl.code.alarm.handler.NotifyMarkHandler;
 import com.cl.code.alarm.infrastructure.AlarmItemRepository;
 import com.cl.code.alarm.infrastructure.AlarmMessageProvider;
 import com.cl.code.alarm.infrastructure.AlarmRecordRepository;
@@ -24,7 +26,6 @@ import org.apache.commons.logging.LogFactory;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * 业务预警服务
@@ -62,18 +63,17 @@ public final class AgtAlarmService {
      * @param event 事件
      */
     public void trigger(BusinessChangeEvent event) {
-
         InnerAlarmItemService innerAlarmItemService = new InnerAlarmItemService(alarmItemRepository);
         InnerAlarmRecordService innerAlarmRecordService = new InnerAlarmRecordService(alarmRecordRepository, idGenerator);
 
-        logger.info("触发业务变更事件,变更因素[" + event.getFactor().getName() + "] 参数:" + JSON.toJSONString(event.getBusinessIds().get()));
+        logger.info("触发业务变更事件,变更因素" + JSON.toJSONString(event.getFactors()) + " 参数:" + JSON.toJSONString(event.getBusinessIds().get()));
 
         // 获取预警项
-        List<AlarmItem> alarmItems = innerAlarmItemService.getAlarmItemByChangeFactor(event.getFactor());
+        List<AlarmItem> alarmItems = innerAlarmItemService.getAlarmItemByChangeFactor(event.getFactors());
         if (CollectionUtils.isNullOrEmpty(alarmItems)) {
+            logger.info("没有监听" + JSON.toJSONString(event.getFactors()) + "因素的预警项");
             return;
         }
-
         // 生效预警
         Map<AlarmItem, UnmodifiableList<Long>> effectAlarmItems = AlarmRuleHandler.execute(alarmItems, event.getBusinessIds());
         if (CollectionUtils.isNullOrEmpty(effectAlarmItems)) {
@@ -88,7 +88,7 @@ public final class AgtAlarmService {
         List<AlarmRecord> unHandleAlarmRecords = innerAlarmRecordService.getUnHandleAlarmRecords(alarmItems, event.getBusinessIds());
 
         // 生成预警记录
-        Map<AlarmRecord, AlarmItem> alarmRecordMap = AlarmRecordHandler.execute(effectAlarmItems, unHandleAlarmRecords);
+        Map<AlarmRecordEntity, AlarmItem> alarmRecordMap = AlarmRecordHandler.execute(effectAlarmItems, unHandleAlarmRecords);
 
         // 业务自动已处理逻辑
         unHandleAlarmRecords = AlarmRecordHandler.filterAutoUpdateStatusRecord(unHandleAlarmRecords);
@@ -103,20 +103,19 @@ public final class AgtAlarmService {
         innerAlarmRecordService.saveOrUpdateAlarmRecords(alarmRecordMap.keySet());
 
         // 通知目标
-        Map<AlarmRecord, Set<Long>> alarmRecordAndPushTargetMap = NotifyTargetHandler.execute(alarmRecordMap);
+        Map<AlarmRecordEntity, List<NotifyTarget>> alarmRecordAndPushTargetMap = NotifyMarkHandler.execute(alarmRecordMap);
 
         // 通知方式
-        Map<AlarmRecord, List<NotifyChannel>> alarmRecordAndPushChannelMap = NotifyChannelHandler.execute(alarmRecordMap);
+        Map<AlarmRecordEntity, List<NotifyChannel>> alarmRecordAndPushChannelMap = NotifyChannelHandler.execute(alarmRecordMap, alarmRecordAndPushTargetMap);
 
         alarmRecordMap.forEach((alarmRecord, alarmItem) -> {
-            Set<Long> targetIds = alarmRecordAndPushTargetMap.get(alarmRecord);
+            List<NotifyTarget> targets = alarmRecordAndPushTargetMap.get(alarmRecord);
             List<NotifyChannel> channels = alarmRecordAndPushChannelMap.get(alarmRecord);
             // 创建和推送消息
-            if (!CollectionUtils.isNullOrEmpty(targetIds) && !CollectionUtils.isNullOrEmpty(channels)) {
-                logger.info("创建和推送消息,预警记录[" + alarmRecord.getAlarmRecordId() + "],通知目标:" + JSON.toJSONString(targetIds) + ",通知方式:" + JSON.toJSONString(channels));
-                alarmMessageProvider.createAndPushMessage(alarmRecord, channels, targetIds);
+            if (!CollectionUtils.isNullOrEmpty(targets) && !CollectionUtils.isNullOrEmpty(channels)) {
+                logger.info("创建和推送消息,预警记录[" + alarmRecord.getAlarmRecordId() + "],通知目标:" + JSON.toJSONString(targets) + ",通知方式:" + JSON.toJSONString(channels));
+                alarmMessageProvider.createAndPushMessage(alarmRecord, channels, targets);
             }
-
         });
     }
 }

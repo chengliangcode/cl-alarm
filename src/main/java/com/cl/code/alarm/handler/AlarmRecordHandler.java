@@ -1,8 +1,11 @@
-package com.cl.code.alarm.domian.record;
+package com.cl.code.alarm.handler;
 
-import com.cl.code.alarm.core.AlarmStrategy;
 import com.cl.code.alarm.core.AlarmStrategyFactory;
 import com.cl.code.alarm.domian.item.AlarmItem;
+import com.cl.code.alarm.domian.record.AlarmRecord;
+import com.cl.code.alarm.domian.record.AlarmRecordEntity;
+import com.cl.code.alarm.domian.record.RecordSupplement;
+import com.cl.code.alarm.infrastructure.AlarmStrategy;
 import com.cl.code.alarm.util.CollectionUtils;
 import com.cl.code.alarm.util.UnmodifiableList;
 
@@ -23,11 +26,11 @@ public class AlarmRecordHandler {
      *
      * @param effectAlarmItems 效果预警项目
      */
-    public static Map<AlarmRecord, AlarmItem> execute(Map<AlarmItem, UnmodifiableList<Long>> effectAlarmItems, List<AlarmRecord> unprocessedAlarmRecords) {
+    public static Map<AlarmRecordEntity, AlarmItem> execute(Map<AlarmItem, UnmodifiableList<Long>> effectAlarmItems, List<AlarmRecord> unprocessedAlarmRecords) {
 
         long alarmTime = Instant.now().toEpochMilli();
 
-        Map<AlarmRecord, AlarmItem> recordMap = new HashMap<>(effectAlarmItems.size());
+        Map<AlarmRecordEntity, AlarmItem> recordMap = new HashMap<>(effectAlarmItems.size());
         for (Map.Entry<AlarmItem, UnmodifiableList<Long>> entry : effectAlarmItems.entrySet()) {
             AlarmItem alarmItem = entry.getKey();
             UnmodifiableList<Long> businessIds = entry.getValue();
@@ -42,7 +45,7 @@ public class AlarmRecordHandler {
                 // 判断是否已经存在
                 Optional<AlarmRecord> optional = unprocessedAlarmRecords.stream().filter(alarmRecord -> alarmRecord.getBusinessId().equals(businessId) && alarmRecord.getAlarmItemId().equals(alarmItem.getAlarmItemId())).findFirst();
 
-                AlarmRecord record;
+                AlarmRecordEntity record;
                 if (optional.isPresent()) {
                     AlarmRecord alarmRecord = optional.get();
                     // 移除
@@ -58,7 +61,7 @@ public class AlarmRecordHandler {
     }
 
     public static AlarmRecordEntity buildRecord(Long alarmRecordId, AlarmItem alarmItem, Long businessId, RecordSupplement supplement, Long alarmTime) {
-        AlarmRecordEntity alarmRecord = new AlarmRecordEntity(alarmRecordId, alarmItem, businessId, alarmTime);
+        AlarmRecordEntity alarmRecord = new AlarmRecordEntity(alarmRecordId, alarmItem.getAlarmItemId(), alarmItem.getAlarmType(), businessId, alarmTime);
         if (supplement == null) {
             supplement = RecordSupplement.def(alarmItem);
         }

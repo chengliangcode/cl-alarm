@@ -1,13 +1,15 @@
-package com.cl.code.alarm.domian.rule;
+package com.cl.code.alarm.handler;
 
-import com.cl.code.alarm.core.AlarmStrategy;
 import com.cl.code.alarm.core.AlarmStrategyFactory;
 import com.cl.code.alarm.domian.item.AlarmItem;
+import com.cl.code.alarm.domian.rule.variable.VariableProvider;
+import com.cl.code.alarm.infrastructure.AlarmStrategy;
 import com.cl.code.alarm.util.CollectionUtils;
 import com.cl.code.alarm.util.UnmodifiableList;
 import com.cl.code.el.ExpressionExecutor;
 import com.cl.code.el.expression.base.BooleanExpression;
 import com.cl.code.el.param.VariableParam;
+import com.cl.code.el.param.VariableValue;
 import com.google.common.collect.HashBasedTable;
 
 import java.util.*;
@@ -48,35 +50,46 @@ public class AlarmRuleHandler {
     private static Map<AlarmItem, UnmodifiableList<Long>> execute(String alarmType, List<AlarmItem> alarmItems, UnmodifiableList<Long> businessIds) {
 
         AlarmStrategy strategy = AlarmStrategyFactory.getStrategy(alarmType);
+        Map<VariableParam, VariableProvider> variableProviders = strategy.getVariableProviders();
 
         // 缓存参数
-        HashBasedTable<VariableParam, Long, Object> cache = HashBasedTable.create();
+        HashBasedTable<VariableParam, Long, VariableValue> cache = HashBasedTable.create();
         return alarmItems.stream().collect(Collectors.toMap(Function.identity(), alarmItem -> {
             List<BooleanExpression> ruleList = alarmItem.getAlarmRules().getRuleList();
             return new UnmodifiableList<>(businessIds.stream().filter(businessId -> ruleList.stream().allMatch(booleanExpression -> {
                 Set<VariableParam> variableParams = booleanExpression.getVariableParams();
-                Map<VariableParam, Object> params = new HashMap<>(2);
-                if (!CollectionUtils.isNullOrEmpty(variableParams)) {
 
+                Map<VariableParam, VariableValue> params = new HashMap<>(2);
+                if (!CollectionUtils.isNullOrEmpty(variableParams)) {
                     for (VariableParam variableParam : variableParams) {
-                        Object variableValue;
+                        VariableValue variableValue;
                         if (cache.contains(variableParam, businessId)) {
                             variableValue = cache.get(variableParam, businessId);
                         } else {
-                            Optional<?> variableValueOptional = strategy.getVariableValue(variableParam, businessId);
-                            if (variableValueOptional.isPresent()) {
-                                variableValue = variableValueOptional.get();
-                                cache.put(variableParam, businessId, variableValue);
-                            } else {
+                            if (variableProviders == null) {
+                                throw new RuntimeException("[" + alarmType + "]需要注册变量提供者");
+                            }
+                            VariableProvider variableProvider = variableProviders.get(variableParam);
+                            if (variableProvider == null) {
+                                throw new RuntimeException("[" + alarmType + "]需要注册[" + variableParam.getName() + "]变量提供者");
+                            }
+                            variableValue = variableProvider.getVariableValue(businessId);
+                            if (variableValue == null || variableValue.isEmpty()) {
                                 return false;
+                            } else {
+                                cache.put(variableParam, businessId, variableValue);
                             }
                         }
                         params.put(variableParam, variableValue);
                     }
                 }
-                return ExpressionExecutor.execute(booleanExpression, params);
+                return executeExpression(booleanExpression, params);
             })).collect(Collectors.toList()));
         }));
+    }
+
+    public static boolean executeExpression(BooleanExpression booleanExpression, Map<VariableParam, VariableValue> params) {
+        return ExpressionExecutor.execute(booleanExpression, params);
     }
 
 }

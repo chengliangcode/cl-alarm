@@ -1,6 +1,5 @@
 package com.cl.code.alarm.domian.record;
 
-import com.cl.code.alarm.domian.item.AlarmItem;
 import lombok.Data;
 
 import java.util.List;
@@ -21,9 +20,14 @@ public class AlarmRecordEntity implements AlarmRecord {
     private Long alarmRecordId;
 
     /**
-     *
+     * 预警项id
      */
-    private AlarmItem alarmItem;
+    private Long alarmItemId;
+
+    /**
+     * 预警类型
+     */
+    private String alarmType;
 
     /**
      * 业务标识
@@ -55,25 +59,12 @@ public class AlarmRecordEntity implements AlarmRecord {
      */
     private boolean handle;
 
-    public AlarmRecordEntity(Long alarmRecordId, AlarmItem alarmItem, Long businessId, Long alarmTime) {
+    public AlarmRecordEntity(Long alarmRecordId, Long alarmItemId, String alarmType, Long businessId, Long alarmTime) {
         this.alarmRecordId = alarmRecordId;
-        this.alarmItem = alarmItem;
+        this.alarmItemId = alarmItemId;
+        this.alarmType = alarmType;
         this.businessId = businessId;
         this.alarmTime = alarmTime;
     }
 
-    @Override
-    public Long getAlarmItemId() {
-        return this.alarmItem.getAlarmItemId();
-    }
-
-    @Override
-    public String getAlarmType() {
-        return this.alarmItem.getAlarmType();
-    }
-
-    @Override
-    public boolean isHandle() {
-        return this.handle;
-    }
 }

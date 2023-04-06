@@ -1,34 +1,34 @@
-package com.cl.code.alarm.domian.notify.target;
+package com.cl.code.alarm.domian.notify.mark;
 
 /**
- * 通知目标
+ * 通知标识
  *
  * @author chengliang
  * @since 1.0.0
  */
-public interface NotifyVirtualTarget {
+public interface NotifyMark {
 
     /**
-     * 得到类型
+     * 类型
      *
      * @return {@code String}
      */
-    String getType();
+    NotifyMarkType getType();
 
     /**
-     * 获得值
+     * 值
      *
      * @return {@code String}
      */
     String getValue();
 
     /**
-     * 指数
+     * 标识
      *
      * @return {@link String}
      */
     default String index() {
-        return getValue() + "-" + getType();
+        return getType().getName() + "-" + getValue();
     }
 
 }

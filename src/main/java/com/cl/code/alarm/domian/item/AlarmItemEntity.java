@@ -2,7 +2,7 @@ package com.cl.code.alarm.domian.item;
 
 import com.cl.code.alarm.domian.monitor.ChangeFactors;
 import com.cl.code.alarm.domian.notify.channel.NotifyChannels;
-import com.cl.code.alarm.domian.notify.target.NotifyTargets;
+import com.cl.code.alarm.domian.notify.mark.NotifyMarks;
 import com.cl.code.alarm.domian.rule.AlarmRules;
 import lombok.Data;
 
@@ -38,7 +38,7 @@ public class AlarmItemEntity implements AlarmItem {
     /**
      * 预警通知目标
      */
-    private NotifyTargets notifyTargets;
+    private NotifyMarks notifyMarks;
 
     /**
      * 通知方式

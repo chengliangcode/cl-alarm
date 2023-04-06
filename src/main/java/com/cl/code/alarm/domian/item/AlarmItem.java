@@ -2,7 +2,7 @@ package com.cl.code.alarm.domian.item;
 
 import com.cl.code.alarm.domian.monitor.ChangeFactors;
 import com.cl.code.alarm.domian.notify.channel.NotifyChannels;
-import com.cl.code.alarm.domian.notify.target.NotifyTargets;
+import com.cl.code.alarm.domian.notify.mark.NotifyMarks;
 import com.cl.code.alarm.domian.rule.AlarmRules;
 
 /**
@@ -14,42 +14,42 @@ import com.cl.code.alarm.domian.rule.AlarmRules;
 public interface AlarmItem {
 
     /**
-     * 得到预警项id
+     * 获取预警项id
      *
      * @return {@code Long}
      */
     Long getAlarmItemId();
 
     /**
-     * 得到预警类型
+     * 获取预警类型
      *
      * @return {@code AlarmType}
      */
     String getAlarmType();
 
     /**
-     * 得到变化因素
+     * 获取变化因素
      *
      * @return {@code ChangeFactors}
      */
     ChangeFactors getChangeFactors();
 
     /**
-     * 得到预警规则
+     * 获取预警规则
      *
      * @return {@code AlarmRules}
      */
     AlarmRules getAlarmRules();
 
     /**
-     * 得到通知目标
+     * 获取通知标识
      *
-     * @return {@code NotifyTargets}
+     * @return {@code NotifyMarks}
      */
-    NotifyTargets getNotifyTargets();
+    NotifyMarks getNotifyMarks();
 
     /**
-     * 得到通知渠道
+     * 获取通知渠道
      *
      * @return {@code NotifyChannels}
      */

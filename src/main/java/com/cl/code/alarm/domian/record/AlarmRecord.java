@@ -1,7 +1,5 @@
 package com.cl.code.alarm.domian.record;
 
-import com.cl.code.alarm.core.AlarmType;
-
 /**
  * 预警记录
  *
@@ -40,8 +38,6 @@ public interface AlarmRecord {
 
     /**
      * 得到预警类型
-     *
-     * @return {@link AlarmType}
      */
     String getAlarmType();
 
@@ -58,19 +54,5 @@ public interface AlarmRecord {
      * @return {@link String}
      */
     String getJson();
-
-    /**
-     * 是否处理
-     *
-     * @return boolean
-     */
-    boolean isHandle();
-
-    /**
-     * 集预警记录id
-     *
-     * @param alarmRecordId 预警记录id
-     */
-    void setAlarmRecordId(Long alarmRecordId);
 
 }

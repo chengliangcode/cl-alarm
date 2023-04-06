@@ -1,14 +1,16 @@
 package com.cl.code.alarm.domian.item;
 
 import com.cl.code.alarm.domian.monitor.ChangeFactors;
+import com.cl.code.alarm.domian.monitor.Factor;
+import com.cl.code.alarm.domian.monitor.FactorEntity;
+import com.cl.code.alarm.domian.notify.channel.NotifyChannel;
 import com.cl.code.alarm.domian.notify.channel.NotifyChannels;
-import com.cl.code.alarm.domian.notify.target.NotifyTargets;
-import com.cl.code.alarm.domian.notify.target.NotifyVirtualTarget;
+import com.cl.code.alarm.domian.notify.mark.NotifyMarkEntity;
+import com.cl.code.alarm.domian.notify.mark.NotifyMarkType;
+import com.cl.code.alarm.domian.notify.mark.NotifyMarks;
 import com.cl.code.alarm.domian.rule.AlarmRules;
 import com.cl.code.el.expression.base.BooleanExpression;
-import com.google.common.base.Strings;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 
 /**
@@ -30,7 +32,7 @@ public class AlarmItemBuilder {
 
     private final AlarmRules alarmRules = new AlarmRules(new ArrayList<>());
 
-    private final NotifyTargets notifyTargets = new NotifyTargets(new ArrayList<>());
+    private final NotifyMarks notifyMarks = new NotifyMarks(new ArrayList<>());
 
     private final NotifyChannels notifyChannels = new NotifyChannels(new ArrayList<>());
 
@@ -46,17 +48,20 @@ public class AlarmItemBuilder {
         return new AlarmItemBuilder(alarmItemId, alarmType);
     }
 
-    @Nonnull
-    public AlarmItemBuilder addFactor(String... factors) {
-        for (String factor : factors) {
-            if (factor != null) {
-                this.changeFactors.addFactor(() -> factor);
-            }
+    public AlarmItemBuilder addFactor(String factor) {
+        if (factor != null) {
+            return addFactor(new FactorEntity(factor));
         }
         return this;
     }
 
-    @Nonnull
+    public AlarmItemBuilder addFactor(Factor factor) {
+        if (factor != null) {
+            this.changeFactors.addFactor(factor);
+        }
+        return this;
+    }
+
     public AlarmItemBuilder addRule(BooleanExpression... expressions) {
         for (BooleanExpression expression : expressions) {
             if (expression != null) {
@@ -66,30 +71,21 @@ public class AlarmItemBuilder {
         return this;
     }
 
-    @Nonnull
-    public AlarmItemBuilder addVirtualTarget(String type, String value) {
-        if (!Strings.isNullOrEmpty(type) && !Strings.isNullOrEmpty(value)) {
-            this.notifyTargets.addVirtualTarget(new NotifyVirtualTarget() {
-                @Override
-                public String getType() {
-                    return type;
-                }
+    public AlarmItemBuilder addNotifyMark(NotifyMarkType type, String value) {
+        this.notifyMarks.addNotifyMark(new NotifyMarkEntity(type, value));
+        return this;
+    }
 
-                @Override
-                public String getValue() {
-                    return value;
-                }
-            });
+    public AlarmItemBuilder addNotifyChannel(String notifyChannel) {
+        if (notifyChannel != null) {
+            return addNotifyChannel(NotifyChannel.of(notifyChannel));
         }
         return this;
     }
 
-    @Nonnull
-    public AlarmItemBuilder addChannel(String... channels) {
-        for (String channel : channels) {
-            if (channel != null) {
-                this.notifyChannels.addChannel(() -> channel);
-            }
+    public AlarmItemBuilder addNotifyChannel(NotifyChannel notifyChannel) {
+        if (notifyChannel != null) {
+            this.notifyChannels.addChannel(notifyChannel);
         }
         return this;
     }
@@ -108,10 +104,9 @@ public class AlarmItemBuilder {
         AlarmItemEntity alarmItem = new AlarmItemEntity(alarmItemId, alarmType, enable);
         alarmItem.setChangeFactors(this.changeFactors);
         alarmItem.setAlarmRules(this.alarmRules);
-        alarmItem.setNotifyTargets(this.notifyTargets);
+        alarmItem.setNotifyMarks(this.notifyMarks);
         alarmItem.setNotifyChannels(this.notifyChannels);
         return alarmItem;
     }
-
 
 }

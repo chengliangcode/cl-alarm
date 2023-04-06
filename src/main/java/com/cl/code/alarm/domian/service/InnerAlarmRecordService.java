@@ -2,6 +2,7 @@ package com.cl.code.alarm.domian.service;
 
 import com.cl.code.alarm.domian.item.AlarmItem;
 import com.cl.code.alarm.domian.record.AlarmRecord;
+import com.cl.code.alarm.domian.record.AlarmRecordEntity;
 import com.cl.code.alarm.infrastructure.AlarmRecordRepository;
 import com.cl.code.alarm.infrastructure.IdGenerator;
 import com.cl.code.alarm.util.CollectionUtils;
@@ -37,7 +38,7 @@ public class InnerAlarmRecordService {
         List<AlarmRecord> unHandleAlarmRecords = new ArrayList<>();
         alarmItems.forEach(alarmItem ->
                 businessIds.forEach(businessId -> {
-                    List<AlarmRecord> alarmRecords = alarmRecordRepository.getRecordByAlarmItemAndBusinessId(alarmItem.getAlarmItemId(), businessId);
+                    List<AlarmRecordEntity> alarmRecords = alarmRecordRepository.getRecordByAlarmItemAndBusinessId(alarmItem.getAlarmItemId(), businessId);
                     if (!CollectionUtils.isNullOrEmpty(alarmRecords)) {
                         alarmRecords = alarmRecords.stream()
                                 .filter(alarmRecord -> !alarmRecord.isHandle())
@@ -60,13 +61,13 @@ public class InnerAlarmRecordService {
         }
     }
 
-    public void saveOrUpdateAlarmRecords(Collection<AlarmRecord> alarmRecords) {
+    public void saveOrUpdateAlarmRecords(Collection<AlarmRecordEntity> alarmRecords) {
 
-        List<AlarmRecord> saveList = alarmRecords.stream()
+        List<AlarmRecordEntity> saveList = alarmRecords.stream()
                 .filter(alarmRecord -> Objects.isNull(alarmRecord.getAlarmRecordId()))
                 .collect(Collectors.toList());
 
-        List<AlarmRecord> updateList = alarmRecords.stream()
+        List<AlarmRecordEntity> updateList = alarmRecords.stream()
                 .filter(alarmRecord -> !Objects.isNull(alarmRecord.getAlarmRecordId()))
                 .collect(Collectors.toList());
         if (!CollectionUtils.isNullOrEmpty(saveList)) {

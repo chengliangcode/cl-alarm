@@ -15,7 +15,7 @@ import java.util.List;
 public interface AlarmItemRepository {
 
     /**
-     * 得到预警项通过id
+     * 获取预警项
      *
      * @param alarmItemId 预警项id
      * @return {@code AlarmItem}
@@ -23,12 +23,12 @@ public interface AlarmItemRepository {
     AlarmItem getAlarmItemById(Long alarmItemId);
 
     /**
-     * 得到预警项通过变动因素
+     * 获取预警项
      *
-     * @param factor 变动因素
+     * @param factor 因素
      * @return {@code List<AlarmItem>}
      */
-    List<AlarmItem> getAlarmItemByChangeFactor(Factor factor);
+    List<AlarmItem> getAlarmItemByFactor(Factor factor);
 
     /**
      * 添加预警项
