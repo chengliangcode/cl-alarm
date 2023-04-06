@@ -1,6 +1,5 @@
 package com.cl.code.alarm.infrastructure;
 
-import com.cl.code.alarm.domian.notify.channel.NotifyChannel;
 import com.cl.code.alarm.domian.notify.target.NotifyTarget;
 import com.cl.code.alarm.domian.record.AlarmRecord;
 
@@ -12,15 +11,16 @@ import java.util.List;
  * @author chengliang
  * @since 1.0.0
  */
-public interface AlarmMessageProvider {
+public interface AlarmMessageProvider<T, V> {
 
     /**
-     * 创建和推送消息
+     * 推送消息
      *
      * @param alarmRecord     预警记录
-     * @param channels        方式
      * @param notifyTargetIds 通知目标id
+     * @param messages        消息
+     * @param t               t
      */
-    void createAndPushMessage(AlarmRecord alarmRecord, List<NotifyChannel> channels, List<NotifyTarget> notifyTargetIds);
+    void pushMessage(AlarmRecord alarmRecord, T t, List<Object> messages, NotifyTarget<V> notifyTargetIds);
 
 }

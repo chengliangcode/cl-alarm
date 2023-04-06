@@ -1,47 +1,42 @@
 package com.cl.code.alarm.domian.notify.target;
 
-import com.cl.code.alarm.domian.notify.mark.NotifyMark;
 import com.cl.code.alarm.util.CollectionUtils;
 
 import java.util.Collections;
 import java.util.Set;
 
-public class NotifyTarget {
+/**
+ * 通知目标
+ *
+ * @author chengliang
+ * @since 1.0.0
+ */
+public class NotifyTarget<V> {
 
-    private NotifyMark notifyMark;
+    private final Set<V> targets;
 
-    private final Set<Long> targets;
-
-    private NotifyTarget(Set<Long> targets) {
+    private NotifyTarget(Set<V> targets) {
         this.targets = targets;
     }
 
-    public static NotifyTarget of(Set<Long> targets) {
-        return new NotifyTarget(targets);
+    public static <V> NotifyTarget<V> of(Set<V> targets) {
+        return new NotifyTarget<>(targets);
     }
 
-    public static NotifyTarget of(Long target) {
-        return new NotifyTarget(Collections.singleton(target));
+    public static <V> NotifyTarget<V> of(V target) {
+        return new NotifyTarget<>(Collections.singleton(target));
     }
 
-    public static NotifyTarget empty() {
-        return new NotifyTarget(null);
+    public static <V> NotifyTarget<V> empty() {
+        return new NotifyTarget<>(null);
     }
 
-    public Set<Long> getTargets() {
+    public Set<V> getTargets() {
         return this.targets;
     }
 
     public boolean isEmpty() {
         return CollectionUtils.isNullOrEmpty(targets);
-    }
-
-    public void setNotifyMark(NotifyMark notifyMark) {
-        this.notifyMark = notifyMark;
-    }
-
-    public NotifyMark getNotifyMark() {
-        return this.notifyMark;
     }
 
 }

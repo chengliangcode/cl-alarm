@@ -4,7 +4,6 @@ import com.alibaba.fastjson2.JSON;
 import com.cl.code.alarm.core.AlarmStrategyFactory;
 import com.cl.code.alarm.domian.business.BusinessChangeEvent;
 import com.cl.code.alarm.domian.item.AlarmItem;
-import com.cl.code.alarm.domian.notify.channel.NotifyChannel;
 import com.cl.code.alarm.domian.notify.target.NotifyTarget;
 import com.cl.code.alarm.domian.record.AlarmRecord;
 import com.cl.code.alarm.domian.record.AlarmRecordEntity;
@@ -31,8 +30,7 @@ import java.util.Map;
  * @author chengliang
  * @since 1.0.0
  */
-@SuppressWarnings("unchecked")
-public final class AgtAlarmService<T> {
+public final class AgtAlarmService {
 
     private static final Log logger = LogFactory.getLog(AgtAlarmService.class);
 
@@ -42,12 +40,6 @@ public final class AgtAlarmService<T> {
 
     @Resource
     private AlarmRecordRepository alarmRecordRepository;
-
-    @Resource
-    private AlarmMessageProvider alarmMessageProvider;
-
-    @Resource
-    private List<AlarmStrategy<T>> alarmStrategies;
 
     private final IdGenerator idGenerator;
 
@@ -64,7 +56,7 @@ public final class AgtAlarmService<T> {
      *
      * @param event 事件
      */
-    public void trigger(BusinessChangeEvent event) {
+    public <T, V> void trigger(BusinessChangeEvent event) {
         InnerAlarmItemService innerAlarmItemService = new InnerAlarmItemService(alarmItemRepository);
         InnerAlarmRecordService innerAlarmRecordService = new InnerAlarmRecordService(alarmRecordRepository, idGenerator);
 
@@ -92,6 +84,8 @@ public final class AgtAlarmService<T> {
         // 生成预警记录
         Map<AlarmRecordEntity, AlarmItem> alarmRecordMap = AlarmRecordHandler.execute(effectAlarmItems, unHandleAlarmRecords);
 
+        Map<AlarmRecordEntity, T> alarmRecordInfoMap = AlarmRecordHandler.execute(alarmRecordMap);
+
         // 业务自动已处理逻辑
         unHandleAlarmRecords = AlarmRecordHandler.filterAutoUpdateStatusRecord(unHandleAlarmRecords);
 
@@ -105,18 +99,23 @@ public final class AgtAlarmService<T> {
         innerAlarmRecordService.saveOrUpdateAlarmRecords(alarmRecordMap.keySet());
 
         // 通知目标
-        Map<AlarmRecordEntity, List<NotifyTarget>> alarmRecordAndPushTargetMap = NotifyMarkHandler.execute(alarmRecordMap);
+        Map<AlarmRecordEntity, NotifyTarget<V>> alarmRecordAndPushTargetMap = NotifyMarkHandler.execute(alarmRecordMap);
 
         // 通知方式
-        Map<AlarmRecordEntity, List<NotifyChannel>> alarmRecordAndPushChannelMap = NotifyChannelHandler.execute(alarmRecordMap, alarmRecordAndPushTargetMap);
+        Map<AlarmRecordEntity, List<Object>> alarmRecordAndPushChannelMap = NotifyChannelHandler.execute(alarmRecordMap, alarmRecordAndPushTargetMap::get, alarmRecordInfoMap::get);
 
         alarmRecordMap.forEach((alarmRecord, alarmItem) -> {
-            List<NotifyTarget> targets = alarmRecordAndPushTargetMap.get(alarmRecord);
-            List<NotifyChannel> channels = alarmRecordAndPushChannelMap.get(alarmRecord);
-            // 创建和推送消息
-            if (!CollectionUtils.isNullOrEmpty(targets) && !CollectionUtils.isNullOrEmpty(channels)) {
-                logger.info("创建和推送消息,预警记录[" + alarmRecord.getAlarmRecordId() + "],通知目标:" + JSON.toJSONString(targets) + ",通知方式:" + JSON.toJSONString(channels));
-                alarmMessageProvider.createAndPushMessage(alarmRecord, channels, targets);
+            NotifyTarget<V> targets = alarmRecordAndPushTargetMap.get(alarmRecord);
+            List<Object> messages = alarmRecordAndPushChannelMap.get(alarmRecord);
+            T t = alarmRecordInfoMap.get(alarmRecord);
+            AlarmStrategy<T, V> strategy = AlarmStrategyFactory.getStrategy(alarmRecord.getAlarmType());
+            AlarmMessageProvider<T, V> alarmMessageProvider = strategy.getAlarmMessageProvider();
+            if (alarmMessageProvider != null) {
+                // 创建和推送消息
+                if (targets != null && !targets.isEmpty() && !CollectionUtils.isNullOrEmpty(messages)) {
+                    logger.info("创建和推送消息,预警记录[" + alarmRecord.getAlarmRecordId() + "],通知目标:" + JSON.toJSONString(targets) + ",通知内容:" + JSON.toJSONString(messages));
+                    alarmMessageProvider.pushMessage(alarmRecord, t, messages, targets);
+                }
             }
         });
     }

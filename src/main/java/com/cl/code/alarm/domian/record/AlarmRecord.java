@@ -38,6 +38,8 @@ public interface AlarmRecord {
 
     /**
      * 得到预警类型
+     *
+     * @return {@link String}
      */
     String getAlarmType();
 

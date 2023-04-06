@@ -1,7 +1,8 @@
 package com.cl.code.alarm.domian.notify.target;
 
-import com.cl.code.alarm.domian.record.RecordSupplement;
+import com.cl.code.alarm.domian.notify.mark.NotifyMark;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -10,19 +11,26 @@ import java.util.Set;
  * @author chengliang
  * @since 1.0.0
  */
-public interface NotifyTargetProvider<T> {
+public interface NotifyTargetProvider<V> {
 
     /**
      * 得到通知目标
      *
-     * @param markValue        标志值
-     * @param recordSupplement
-     * @return {@code List<Long>}
+     * @param notifyMarks 通知标识
+     * @param businessId  业务标识
+     * @return {@link NotifyTarget}<{@link V}>
      */
-    default NotifyTarget getNotifyTarget(String markValue, T recordSupplement) {
-        return NotifyTarget.of(getTarget(markValue, recordSupplement));
+    default NotifyTarget<V> getNotifyTarget(List<NotifyMark> notifyMarks, Long businessId) {
+        return NotifyTarget.of(getTarget(notifyMarks, businessId));
     }
 
-    Set<Long> getTarget(String markValue, T recordSupplement);
+    /**
+     * 获取目标
+     *
+     * @param notifyMarks 通知标识
+     * @param businessId  业务标识
+     * @return {@link Set}<{@link V}>
+     */
+    Set<V> getTarget(List<NotifyMark> notifyMarks, Long businessId);
 
 }

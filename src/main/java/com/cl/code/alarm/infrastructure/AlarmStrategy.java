@@ -3,9 +3,9 @@ package com.cl.code.alarm.infrastructure;
 import com.cl.code.alarm.domian.item.AlarmItem;
 import com.cl.code.alarm.domian.notify.channel.NotifyChannel;
 import com.cl.code.alarm.domian.notify.channel.NotifyChannelProvider;
-import com.cl.code.alarm.domian.notify.mark.NotifyMarkType;
+import com.cl.code.alarm.domian.notify.target.NotifyTarget;
 import com.cl.code.alarm.domian.notify.target.NotifyTargetProvider;
-import com.cl.code.alarm.domian.record.RecordSupplement;
+import com.cl.code.alarm.domian.record.AlarmOtherInfo;
 import com.cl.code.alarm.domian.rule.variable.VariableProvider;
 import com.cl.code.alarm.util.UnmodifiableList;
 import com.cl.code.el.param.VariableParam;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  * @author chengliang
  * @since 1.0.0
  */
-public interface AlarmStrategy<T> {
+public interface AlarmStrategy<T, V> {
 
     /**
      * 是否自动更新记录状态
@@ -43,8 +43,8 @@ public interface AlarmStrategy<T> {
      * @param alarmItem   预警项
      * @return {@code Map<Long, RecordSupplement>}
      */
-    default Map<Long, RecordSupplement<T>> recordAppend(AlarmItem alarmItem, UnmodifiableList<Long> businessIds) {
-        return businessIds.stream().collect(Collectors.toMap(Function.identity(), businessId -> recordAppend(alarmItem, businessId)));
+    default Map<Long, AlarmOtherInfo<T>> getOtherInfo(AlarmItem alarmItem, UnmodifiableList<Long> businessIds) {
+        return businessIds.stream().collect(Collectors.toMap(Function.identity(), businessId -> getOtherInfo(alarmItem, businessId)));
     }
 
     /**
@@ -52,24 +52,26 @@ public interface AlarmStrategy<T> {
      *
      * @param businessId 业务标识
      * @param alarmItem  预警项
-     * @return {@code RecordSupplement}
+     * @return {@link AlarmOtherInfo}
      */
-    default RecordSupplement<T> recordAppend(AlarmItem alarmItem, Long businessId) {
-        return RecordSupplement.def(alarmItem);
-    }
+    AlarmOtherInfo<T> getOtherInfo(AlarmItem alarmItem, Long businessId);
 
     /**
-     * 获取通知对象提供者
+     * 获取通知对象
      *
-     * @return {@code Map<NotifyMarkType, NotifyTargetProvider>}
+     * @return {@link NotifyTarget}<{@link V}>
      */
-    Map<NotifyMarkType, NotifyTargetProvider<T>> getNotifyTargetProviders();
+    NotifyTargetProvider<V> getNotifyTargetProvider();
 
     /**
      * 得到通知渠道提供者
      *
      * @return {@code Map<NotifyChannel, NotifyChannelProvider>}
      */
-    Map<NotifyChannel, NotifyChannelProvider> getNotifyChannelProviders();
+    Map<NotifyChannel, NotifyChannelProvider<T, V>> getNotifyChannelProviders();
+
+
+    AlarmMessageProvider<T, V> getAlarmMessageProvider();
+
 
 }
