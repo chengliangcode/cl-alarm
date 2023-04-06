@@ -1,7 +1,9 @@
 package com.cl.code.alarm.domian.notify.mark;
 
 import com.google.common.base.Strings;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode
 public class NotifyMarkType {
 
     private final String name;

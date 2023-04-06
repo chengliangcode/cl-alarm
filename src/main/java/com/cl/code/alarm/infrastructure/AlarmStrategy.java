@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  * @author chengliang
  * @since 1.0.0
  */
-public interface AlarmStrategy {
+public interface AlarmStrategy<T> {
 
     /**
      * 是否自动更新记录状态
@@ -43,7 +43,7 @@ public interface AlarmStrategy {
      * @param alarmItem   预警项
      * @return {@code Map<Long, RecordSupplement>}
      */
-    default Map<Long, RecordSupplement> recordAppend(AlarmItem alarmItem, UnmodifiableList<Long> businessIds) {
+    default Map<Long, RecordSupplement<T>> recordAppend(AlarmItem alarmItem, UnmodifiableList<Long> businessIds) {
         return businessIds.stream().collect(Collectors.toMap(Function.identity(), businessId -> recordAppend(alarmItem, businessId)));
     }
 
@@ -54,7 +54,7 @@ public interface AlarmStrategy {
      * @param alarmItem  预警项
      * @return {@code RecordSupplement}
      */
-    default RecordSupplement recordAppend(AlarmItem alarmItem, Long businessId) {
+    default RecordSupplement<T> recordAppend(AlarmItem alarmItem, Long businessId) {
         return RecordSupplement.def(alarmItem);
     }
 
@@ -63,7 +63,7 @@ public interface AlarmStrategy {
      *
      * @return {@code Map<NotifyMarkType, NotifyTargetProvider>}
      */
-    Map<NotifyMarkType, NotifyTargetProvider> getNotifyTargetProviders();
+    Map<NotifyMarkType, NotifyTargetProvider<T>> getNotifyTargetProviders();
 
     /**
      * 得到通知渠道提供者

@@ -20,7 +20,7 @@ public class AlarmStrategyFactory {
     }
 
     public static AlarmStrategy getStrategy(String alarmType) {
-        AlarmStrategy strategy = STRATEGY_MAP.get(alarmType);
+        AlarmStrategy<Object> strategy = STRATEGY_MAP.get(alarmType);
         if (strategy == null) {
             throw new IllegalArgumentException("未知的预警类型[" + alarmType + "],请实现该预警类型的策略类" + AlarmStrategy.class + "并注册到" + AlarmStrategyFactory.class + "中");
         }

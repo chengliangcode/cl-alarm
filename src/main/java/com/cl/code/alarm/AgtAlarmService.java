@@ -1,6 +1,7 @@
 package com.cl.code.alarm;
 
 import com.alibaba.fastjson2.JSON;
+import com.cl.code.alarm.core.AlarmStrategyFactory;
 import com.cl.code.alarm.domian.business.BusinessChangeEvent;
 import com.cl.code.alarm.domian.item.AlarmItem;
 import com.cl.code.alarm.domian.notify.channel.NotifyChannel;
@@ -13,10 +14,7 @@ import com.cl.code.alarm.handler.AlarmRecordHandler;
 import com.cl.code.alarm.handler.AlarmRuleHandler;
 import com.cl.code.alarm.handler.NotifyChannelHandler;
 import com.cl.code.alarm.handler.NotifyMarkHandler;
-import com.cl.code.alarm.infrastructure.AlarmItemRepository;
-import com.cl.code.alarm.infrastructure.AlarmMessageProvider;
-import com.cl.code.alarm.infrastructure.AlarmRecordRepository;
-import com.cl.code.alarm.infrastructure.IdGenerator;
+import com.cl.code.alarm.infrastructure.*;
 import com.cl.code.alarm.util.CollectionUtils;
 import com.cl.code.alarm.util.SnowFlakeGenerator;
 import com.cl.code.alarm.util.UnmodifiableList;
@@ -33,7 +31,8 @@ import java.util.Map;
  * @author chengliang
  * @since 1.0.0
  */
-public final class AgtAlarmService {
+@SuppressWarnings("unchecked")
+public final class AgtAlarmService<T> {
 
     private static final Log logger = LogFactory.getLog(AgtAlarmService.class);
 
@@ -46,6 +45,9 @@ public final class AgtAlarmService {
 
     @Resource
     private AlarmMessageProvider alarmMessageProvider;
+
+    @Resource
+    private List<AlarmStrategy<T>> alarmStrategies;
 
     private final IdGenerator idGenerator;
 

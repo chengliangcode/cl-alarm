@@ -65,6 +65,7 @@ public class AlarmRecordHandler {
         if (supplement == null) {
             supplement = RecordSupplement.def(alarmItem);
         }
+        alarmRecord.setInfo(supplement.getInfo());
         alarmRecord.setGroupTag(supplement.getGroupTag());
         alarmRecord.setJson(supplement.getJson());
         return alarmRecord;

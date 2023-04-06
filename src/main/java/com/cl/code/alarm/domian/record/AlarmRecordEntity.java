@@ -12,7 +12,7 @@ import java.util.List;
  * @since 1.0.0
  */
 @Data
-public class AlarmRecordEntity implements AlarmRecord {
+public class AlarmRecordEntity<T> implements AlarmRecord {
 
     /**
      * 预警记录id
@@ -48,6 +48,11 @@ public class AlarmRecordEntity implements AlarmRecord {
      * json
      */
     private String json;
+
+    /**
+     * 信息
+     */
+    private T info;
 
     /**
      * 通知目标ids

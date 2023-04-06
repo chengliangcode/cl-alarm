@@ -6,7 +6,6 @@ import com.cl.code.alarm.domian.notify.mark.NotifyMark;
 import com.cl.code.alarm.domian.notify.mark.NotifyMarkType;
 import com.cl.code.alarm.domian.notify.target.NotifyTarget;
 import com.cl.code.alarm.domian.notify.target.NotifyTargetProvider;
-import com.cl.code.alarm.domian.record.AlarmRecord;
 import com.cl.code.alarm.domian.record.AlarmRecordEntity;
 import com.cl.code.alarm.infrastructure.AlarmStrategy;
 import com.google.common.collect.HashBasedTable;
@@ -63,7 +62,7 @@ public class NotifyMarkHandler {
                         throw new RuntimeException("[" + alarmType + "]需要注册[" + notifyMark.getType().getName() + "]通知对象提供者");
                     }
 
-                    notifyTarget = notifyTargetProvider.getNotifyTarget(notifyMark.getValue());
+                    notifyTarget = notifyTargetProvider.getNotifyTarget(notifyMark.getValue(), alarmRecord.getInfo());
                     if (notifyTarget == null) {
                         notifyTarget = NotifyTarget.empty();
                     }

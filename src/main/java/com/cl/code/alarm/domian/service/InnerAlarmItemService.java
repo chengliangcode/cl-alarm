@@ -8,6 +8,7 @@ import com.cl.code.alarm.util.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -28,7 +29,11 @@ public class InnerAlarmItemService {
     }
 
     public List<AlarmItem> getAlarmItemByChangeFactor(List<Factor> factors) {
-        List<AlarmItem> alarmItems = factors.stream().map(alarmItemRepository::getAlarmItemByFactor).flatMap(Collection::stream).collect(Collectors.toList());
+        List<AlarmItem> alarmItems = factors.stream().map(item -> {
+            List<AlarmItem> alarmItemByFactor = alarmItemRepository.getAlarmItemByFactor(item);
+            return CollectionUtils.isNullOrEmpty(alarmItemByFactor) ? new ArrayList<AlarmItem>() : alarmItemByFactor;
+        }).flatMap(Collection::stream).collect(Collectors.toList());
+
         if (CollectionUtils.isNullOrEmpty(alarmItems)) {
             return Collections.emptyList();
         }

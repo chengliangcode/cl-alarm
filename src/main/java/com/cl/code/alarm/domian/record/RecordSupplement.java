@@ -4,7 +4,7 @@ import com.cl.code.alarm.domian.item.AlarmItem;
 import lombok.Data;
 
 @Data
-public class RecordSupplement {
+public class RecordSupplement<T> {
 
     /**
      * 分组标识
@@ -15,6 +15,10 @@ public class RecordSupplement {
      * json
      */
     private String json;
+
+
+    private T info;
+
 
     public static RecordSupplement of(String groupTag, String json) {
         RecordSupplement recordSupplement = new RecordSupplement();
