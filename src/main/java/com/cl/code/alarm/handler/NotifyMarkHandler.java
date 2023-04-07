@@ -32,15 +32,15 @@ public class NotifyMarkHandler {
      * @param alarmRecordMap 预警记录
      * @return {@code Map<AlarmRecordEntity, List<NotifyTarget>>}
      */
-    public static <T, V> Map<AlarmRecordEntity, NotifyTarget<V>> execute(Map<AlarmRecordEntity, AlarmItem> alarmRecordMap) {
+    public static <B, U, M> Map<AlarmRecordEntity, NotifyTarget<U>> execute(Map<AlarmRecordEntity, AlarmItem> alarmRecordMap) {
 
 
-        Map<AlarmRecordEntity, NotifyTarget<V>> alarmRecordAndPushTargetMap = new HashMap<>(alarmRecordMap.size());
+        Map<AlarmRecordEntity, NotifyTarget<U>> alarmRecordAndPushTargetMap = new HashMap<>(alarmRecordMap.size());
         alarmRecordMap.forEach((alarmRecord, alarmItem) -> {
             Long businessId = alarmRecord.getBusinessId();
             String alarmType = alarmRecord.getAlarmType();
-            AlarmStrategy<T, V> strategy = AlarmStrategyFactory.getStrategy(alarmType);
-            NotifyTargetProvider<V> notifyTargetProvider = strategy.getNotifyTargetProvider();
+            AlarmStrategy<B, U, M> strategy = AlarmStrategyFactory.getStrategy(alarmType);
+            NotifyTargetProvider<U> notifyTargetProvider = strategy.getNotifyTargetProvider();
             if (notifyTargetProvider == null) {
                 throw new RuntimeException("[" + alarmType + "]需要注册通知对象提供者");
             }
@@ -48,7 +48,7 @@ public class NotifyMarkHandler {
             // 通知标记
             List<NotifyMark> notifyMarks = alarmItem.getNotifyMarks().getNotifyMarks();
 
-            NotifyTarget<V> notifyTarget = notifyTargetProvider.getNotifyTarget(notifyMarks, businessId);
+            NotifyTarget<U> notifyTarget = notifyTargetProvider.getNotifyTarget(notifyMarks, businessId);
             if (notifyTarget != null && !notifyTarget.isEmpty()) {
                 alarmRecordAndPushTargetMap.put(alarmRecord, notifyTarget);
                 logger.info("预警记录[" + alarmRecord + "]的真实通知对象为" + JSON.toJSONString(notifyTarget.getTargets()));

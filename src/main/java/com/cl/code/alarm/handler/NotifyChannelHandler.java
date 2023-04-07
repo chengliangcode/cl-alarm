@@ -22,23 +22,23 @@ import java.util.function.Function;
  */
 public class NotifyChannelHandler {
 
-    public static <T, V> Map<AlarmRecordEntity, List<Object>> execute(Map<AlarmRecordEntity, AlarmItem> alarmRecordMap, Function<AlarmRecordEntity, NotifyTarget<V>> f1, Function<AlarmRecordEntity, T> f2) {
-        HashMap<AlarmRecordEntity, List<Object>> alarmRecordAndPushChannelMap = new HashMap<>(alarmRecordMap.size());
+    public static <B, U, M> Map<AlarmRecordEntity, List<M>> execute(Map<AlarmRecordEntity, AlarmItem> alarmRecordMap, Function<AlarmRecordEntity, NotifyTarget<U>> f1, Function<AlarmRecordEntity, B> f2) {
+        HashMap<AlarmRecordEntity, List<M>> alarmRecordAndPushChannelMap = new HashMap<>(alarmRecordMap.size());
         alarmRecordMap.forEach((alarmRecord, alarmItem) -> {
             String alarmType = alarmRecord.getAlarmType();
-            AlarmStrategy<T, V> strategy = AlarmStrategyFactory.getStrategy(alarmRecord.getAlarmType());
-            Map<NotifyChannel, NotifyChannelProvider<T, V>> notifyChannelProviders = strategy.getNotifyChannelProviders();
+            AlarmStrategy<B, U, M> strategy = AlarmStrategyFactory.getStrategy(alarmRecord.getAlarmType());
+            Map<NotifyChannel, NotifyChannelProvider<B, U, M>> notifyChannelProviders = strategy.getNotifyChannelProviders();
             if (notifyChannelProviders == null) {
                 throw new RuntimeException("[" + alarmType + "]需要注册通知渠道提供者");
             }
             List<NotifyChannel> channels = alarmItem.getNotifyChannels().getChannels();
-            List<Object> messages = new ArrayList<>();
+            List<M> messages = new ArrayList<>();
             channels.forEach(channel -> {
-                NotifyChannelProvider<T, V> notifyChannelProvider = notifyChannelProviders.get(channel);
+                NotifyChannelProvider<B, U, M> notifyChannelProvider = notifyChannelProviders.get(channel);
                 if (notifyChannelProvider == null) {
                     throw new RuntimeException("[" + alarmType + "]需要注册[" + channel.getName() + "]通知渠道提供者");
                 }
-                List<Object> message = notifyChannelProvider.buildMessage(alarmRecord, f2.apply(alarmRecord), f1.apply(alarmRecord));
+                List<M> message = notifyChannelProvider.buildMessage(alarmRecord, f2.apply(alarmRecord), f1.apply(alarmRecord));
                 messages.addAll(message);
             });
             alarmRecordAndPushChannelMap.put(alarmRecord, messages);

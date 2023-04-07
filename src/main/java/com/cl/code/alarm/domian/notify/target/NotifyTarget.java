@@ -11,27 +11,27 @@ import java.util.Set;
  * @author chengliang
  * @since 1.0.0
  */
-public class NotifyTarget<V> {
+public class NotifyTarget<U> {
 
-    private final Set<V> targets;
+    private final Set<U> targets;
 
-    private NotifyTarget(Set<V> targets) {
+    private NotifyTarget(Set<U> targets) {
         this.targets = targets;
     }
 
-    public static <V> NotifyTarget<V> of(Set<V> targets) {
+    public static <U> NotifyTarget<U> of(Set<U> targets) {
         return new NotifyTarget<>(targets);
     }
 
-    public static <V> NotifyTarget<V> of(V target) {
+    public static <U> NotifyTarget<U> of(U target) {
         return new NotifyTarget<>(Collections.singleton(target));
     }
 
-    public static <V> NotifyTarget<V> empty() {
+    public static <U> NotifyTarget<U> empty() {
         return new NotifyTarget<>(null);
     }
 
-    public Set<V> getTargets() {
+    public Set<U> getTargets() {
         return this.targets;
     }
 

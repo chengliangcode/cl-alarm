@@ -16,11 +16,14 @@ import java.util.stream.Collectors;
 
 /**
  * 预警策略
+ * B 业务单元
+ * U 目标单元
+ * M 消息单元
  *
  * @author chengliang
  * @since 1.0.0
  */
-public interface AlarmStrategy<T, V> {
+public interface AlarmStrategy<B, U, M> {
 
     /**
      * 是否自动更新记录状态
@@ -43,7 +46,7 @@ public interface AlarmStrategy<T, V> {
      * @param alarmItem   预警项
      * @return {@code Map<Long, RecordSupplement>}
      */
-    default Map<Long, AlarmOtherInfo<T>> getOtherInfo(AlarmItem alarmItem, UnmodifiableList<Long> businessIds) {
+    default Map<Long, AlarmOtherInfo<B>> getOtherInfo(AlarmItem alarmItem, UnmodifiableList<Long> businessIds) {
         return businessIds.stream().collect(Collectors.toMap(Function.identity(), businessId -> getOtherInfo(alarmItem, businessId)));
     }
 
@@ -54,24 +57,24 @@ public interface AlarmStrategy<T, V> {
      * @param alarmItem  预警项
      * @return {@link AlarmOtherInfo}
      */
-    AlarmOtherInfo<T> getOtherInfo(AlarmItem alarmItem, Long businessId);
+    AlarmOtherInfo<B> getOtherInfo(AlarmItem alarmItem, Long businessId);
 
     /**
      * 获取通知对象
      *
-     * @return {@link NotifyTarget}<{@link V}>
+     * @return {@link NotifyTarget}<{@link U}>
      */
-    NotifyTargetProvider<V> getNotifyTargetProvider();
+    NotifyTargetProvider<U> getNotifyTargetProvider();
 
     /**
      * 得到通知渠道提供者
      *
      * @return {@code Map<NotifyChannel, NotifyChannelProvider>}
      */
-    Map<NotifyChannel, NotifyChannelProvider<T, V>> getNotifyChannelProviders();
+    Map<NotifyChannel, NotifyChannelProvider<B, U, M>> getNotifyChannelProviders();
 
 
-    AlarmMessageProvider<T, V> getAlarmMessageProvider();
+    AlarmMessageProvider<B, U, M> getAlarmMessageProvider();
 
 
 }

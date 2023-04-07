@@ -56,7 +56,7 @@ public final class AgtAlarmService {
      *
      * @param event 事件
      */
-    public <T, V> void trigger(BusinessChangeEvent event) {
+    public <B, U, M> void trigger(BusinessChangeEvent event) {
         InnerAlarmItemService innerAlarmItemService = new InnerAlarmItemService(alarmItemRepository);
         InnerAlarmRecordService innerAlarmRecordService = new InnerAlarmRecordService(alarmRecordRepository, idGenerator);
 
@@ -84,7 +84,7 @@ public final class AgtAlarmService {
         // 生成预警记录
         Map<AlarmRecordEntity, AlarmItem> alarmRecordMap = AlarmRecordHandler.execute(effectAlarmItems, unHandleAlarmRecords);
 
-        Map<AlarmRecordEntity, T> alarmRecordInfoMap = AlarmRecordHandler.execute(alarmRecordMap);
+        Map<AlarmRecordEntity, B> alarmRecordInfoMap = AlarmRecordHandler.execute(alarmRecordMap);
 
         // 业务自动已处理逻辑
         unHandleAlarmRecords = AlarmRecordHandler.filterAutoUpdateStatusRecord(unHandleAlarmRecords);
@@ -99,17 +99,17 @@ public final class AgtAlarmService {
         innerAlarmRecordService.saveOrUpdateAlarmRecords(alarmRecordMap.keySet());
 
         // 通知目标
-        Map<AlarmRecordEntity, NotifyTarget<V>> alarmRecordAndPushTargetMap = NotifyMarkHandler.execute(alarmRecordMap);
+        Map<AlarmRecordEntity, NotifyTarget<U>> alarmRecordAndPushTargetMap = NotifyMarkHandler.execute(alarmRecordMap);
 
         // 通知方式
-        Map<AlarmRecordEntity, List<Object>> alarmRecordAndPushChannelMap = NotifyChannelHandler.execute(alarmRecordMap, alarmRecordAndPushTargetMap::get, alarmRecordInfoMap::get);
+        Map<AlarmRecordEntity, List<M>> alarmRecordAndPushChannelMap = NotifyChannelHandler.execute(alarmRecordMap, alarmRecordAndPushTargetMap::get, alarmRecordInfoMap::get);
 
         alarmRecordMap.forEach((alarmRecord, alarmItem) -> {
-            NotifyTarget<V> targets = alarmRecordAndPushTargetMap.get(alarmRecord);
-            List<Object> messages = alarmRecordAndPushChannelMap.get(alarmRecord);
-            T t = alarmRecordInfoMap.get(alarmRecord);
-            AlarmStrategy<T, V> strategy = AlarmStrategyFactory.getStrategy(alarmRecord.getAlarmType());
-            AlarmMessageProvider<T, V> alarmMessageProvider = strategy.getAlarmMessageProvider();
+            NotifyTarget<U> targets = alarmRecordAndPushTargetMap.get(alarmRecord);
+            List<M> messages = alarmRecordAndPushChannelMap.get(alarmRecord);
+            B t = alarmRecordInfoMap.get(alarmRecord);
+            AlarmStrategy<B, U, M> strategy = AlarmStrategyFactory.getStrategy(alarmRecord.getAlarmType());
+            AlarmMessageProvider<B, U, M> alarmMessageProvider = strategy.getAlarmMessageProvider();
             if (alarmMessageProvider != null) {
                 // 创建和推送消息
                 if (targets != null && !targets.isEmpty() && !CollectionUtils.isNullOrEmpty(messages)) {

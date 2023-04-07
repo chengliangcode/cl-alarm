@@ -35,10 +35,7 @@ public final class AgtAlarmItemService {
             throw new RuntimeException("预警类型不允许修改");
         }
         //
-        if (!alarmItem.getChangeFactors().equals(oldAlarmItem.getChangeFactors()) ||
-                !alarmItem.getAlarmRules().equals(oldAlarmItem.getAlarmRules()) ||
-                alarmItem.isEnable() != oldAlarmItem.isEnable()
-        ) {
+        if (!alarmItem.getChangeFactors().equals(oldAlarmItem.getChangeFactors()) || !alarmItem.getAlarmRules().equals(oldAlarmItem.getAlarmRules()) || alarmItem.isEnable() != oldAlarmItem.isEnable()) {
             // 预警判断规则发送变化 删除未处理预警记录
         }
 

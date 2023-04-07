@@ -11,16 +11,16 @@ import java.util.Set;
  * @author chengliang
  * @since 1.0.0
  */
-public interface NotifyTargetProvider<V> {
+public interface NotifyTargetProvider<U> {
 
     /**
      * 得到通知目标
      *
      * @param notifyMarks 通知标识
      * @param businessId  业务标识
-     * @return {@link NotifyTarget}<{@link V}>
+     * @return {@link NotifyTarget}<{@link U}>
      */
-    default NotifyTarget<V> getNotifyTarget(List<NotifyMark> notifyMarks, Long businessId) {
+    default NotifyTarget<U> getNotifyTarget(List<NotifyMark> notifyMarks, Long businessId) {
         return NotifyTarget.of(getTarget(notifyMarks, businessId));
     }
 
@@ -29,8 +29,8 @@ public interface NotifyTargetProvider<V> {
      *
      * @param notifyMarks 通知标识
      * @param businessId  业务标识
-     * @return {@link Set}<{@link V}>
+     * @return {@link Set}<{@link U}>
      */
-    Set<V> getTarget(List<NotifyMark> notifyMarks, Long businessId);
+    Set<U> getTarget(List<NotifyMark> notifyMarks, Long businessId);
 
 }

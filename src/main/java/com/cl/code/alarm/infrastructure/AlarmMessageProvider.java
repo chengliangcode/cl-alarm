@@ -11,16 +11,16 @@ import java.util.List;
  * @author chengliang
  * @since 1.0.0
  */
-public interface AlarmMessageProvider<T, V> {
+public interface AlarmMessageProvider<B, U, M> {
 
     /**
      * 推送消息
      *
      * @param alarmRecord     预警记录
-     * @param notifyTargetIds 通知目标id
+     * @param info            信息
      * @param messages        消息
-     * @param t               t
+     * @param notifyTargetIds 通知目标id
      */
-    void pushMessage(AlarmRecord alarmRecord, T t, List<Object> messages, NotifyTarget<V> notifyTargetIds);
+    void pushMessage(AlarmRecord alarmRecord, B info, List<M> messages, NotifyTarget<U> notifyTargetIds);
 
 }

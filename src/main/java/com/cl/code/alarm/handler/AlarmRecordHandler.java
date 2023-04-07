@@ -26,7 +26,7 @@ public class AlarmRecordHandler {
      *
      * @param effectAlarmItems 效果预警项目
      */
-    public static <T, V> Map<AlarmRecordEntity, AlarmItem> execute(Map<AlarmItem, UnmodifiableList<Long>> effectAlarmItems, List<AlarmRecord> unprocessedAlarmRecords) {
+    public static <B, U, M> Map<AlarmRecordEntity, AlarmItem> execute(Map<AlarmItem, UnmodifiableList<Long>> effectAlarmItems, List<AlarmRecord> unprocessedAlarmRecords) {
 
         long alarmTime = Instant.now().toEpochMilli();
 
@@ -58,15 +58,15 @@ public class AlarmRecordHandler {
      * 执行
      *
      * @param alarmRecordMap 预警记录地图
-     * @return {@link Map}<{@link AlarmRecordEntity}, {@link T}>
+     * @return {@link Map}<{@link AlarmRecordEntity}, {@link B}>
      */
-    public static <T, V> Map<AlarmRecordEntity, T> execute(Map<AlarmRecordEntity, AlarmItem> alarmRecordMap) {
-        Map<AlarmRecordEntity, T> recordMap = new HashMap<>(alarmRecordMap.size());
+    public static <B, U, M> Map<AlarmRecordEntity, B> execute(Map<AlarmRecordEntity, AlarmItem> alarmRecordMap) {
+        Map<AlarmRecordEntity, B> recordMap = new HashMap<>(alarmRecordMap.size());
         for (Map.Entry<AlarmRecordEntity, AlarmItem> entry : alarmRecordMap.entrySet()) {
             AlarmRecordEntity alarmRecord = entry.getKey();
             AlarmItem alarmItem = entry.getValue();
-            AlarmStrategy<T, V> strategy = AlarmStrategyFactory.getStrategy(alarmItem.getAlarmType());
-            AlarmOtherInfo<T> otherInfo = strategy.getOtherInfo(alarmItem, alarmRecord.getBusinessId());
+            AlarmStrategy<B, U, M> strategy = AlarmStrategyFactory.getStrategy(alarmItem.getAlarmType());
+            AlarmOtherInfo<B> otherInfo = strategy.getOtherInfo(alarmItem, alarmRecord.getBusinessId());
             if (otherInfo != null) {
                 alarmRecord.setGroupTag(otherInfo.getGroupTag());
                 alarmRecord.setJson(otherInfo.getJson());

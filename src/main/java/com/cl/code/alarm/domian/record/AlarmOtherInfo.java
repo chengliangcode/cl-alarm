@@ -10,7 +10,7 @@ import lombok.Data;
  * @since 1.0.0
  */
 @Data
-public class AlarmOtherInfo<T> {
+public class AlarmOtherInfo<B> {
 
     /**
      * 分组标识
@@ -25,16 +25,16 @@ public class AlarmOtherInfo<T> {
     /**
      * 信息
      */
-    private T info;
+    private B info;
 
-    public static <T> AlarmOtherInfo<T> of(String groupTag, String json) {
-        AlarmOtherInfo<T> alarmOtherInfo = new AlarmOtherInfo<>();
+    public static <B> AlarmOtherInfo<B> of(String groupTag, String json) {
+        AlarmOtherInfo<B> alarmOtherInfo = new AlarmOtherInfo<>();
         alarmOtherInfo.setGroupTag(groupTag);
         alarmOtherInfo.setJson(json);
         return alarmOtherInfo;
     }
 
-    public static <T> AlarmOtherInfo<T> def(AlarmItem alarmItem) {
+    public static <B> AlarmOtherInfo<B> def(AlarmItem alarmItem) {
         return of(alarmItem.getAlarmType(), null);
     }
 

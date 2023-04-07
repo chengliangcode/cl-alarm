@@ -11,7 +11,7 @@ import java.util.List;
  * @author chengliang
  * @since 1.0.0
  */
-public interface NotifyChannelProvider<T, V> {
+public interface NotifyChannelProvider<B, U, M> {
 
     /**
      * 构建消息
@@ -21,6 +21,6 @@ public interface NotifyChannelProvider<T, V> {
      * @param notifyTargets 通知目标
      * @return {@link List}<{@link Object}>
      */
-    List<Object> buildMessage(AlarmRecord alarmRecord, T info, NotifyTarget<V> notifyTargets);
+    List<M> buildMessage(AlarmRecord alarmRecord, B info, NotifyTarget<U> notifyTargets);
 
 }
